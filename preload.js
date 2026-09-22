@@ -16,4 +16,12 @@ contextBridge.exposeInMainWorld('api', {
   onCursor: (fn) => ipcRenderer.on('pet-cursor', (_e, pos) => fn(pos)),
   onPetConfig: (fn) => ipcRenderer.on('pet-config', (_e, cfg) => fn(cfg)),
   onPetClosed: (fn) => ipcRenderer.on('pet-closed', () => fn()),
+
+  // 친구 연결
+  netConnect: (opts) => ipcRenderer.invoke('net-connect', opts),
+  netDisconnect: () => ipcRenderer.send('net-disconnect'),
+  netSend: (event, payload) => ipcRenderer.send('net-send', { event, payload }),
+  netStatus: () => ipcRenderer.invoke('net-status'),
+  netMakeInvite: (opts) => ipcRenderer.invoke('net-make-invite', opts),
+  onNet: (fn) => ipcRenderer.on('pet-net', (_e, msg) => fn(msg)),
 });
