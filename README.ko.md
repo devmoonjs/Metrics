@@ -38,6 +38,33 @@
 
 ## 설치
 
+[Releases](https://github.com/devmoonjs/Metrics/releases)에서 최신 `.dmg`를 내려받아 `Metrics.app`을 응용 프로그램 폴더로 끌어다 놓습니다. Apple Silicon과 Intel 맥 모두에서 동작합니다.
+
+Windows 설치 파일은 아직 제공하지 않습니다. 직접 빌드하셔야 합니다 ([빌드](#빌드) 참고).
+
+### 최초 실행 승인
+
+앱은 ad-hoc 서명만 되어 있고 Apple 공증(notarization)은 받지 않았습니다. 그래서 내려받은 앱을 처음 열면 macOS가 차단합니다.
+
+1. `Metrics.app`을 한 번 열어 봅니다 (차단 경고가 뜹니다)
+2. **시스템 설정 → 개인정보 보호 및 보안**을 엽니다
+3. 아래로 스크롤해 **확인 없이 열기**를 누릅니다
+4. 다시 뜨는 경고에서 **열기**를 누릅니다
+
+한 번만 하면 이후로는 그냥 열립니다. 터미널이 편하시면 한 줄로도 됩니다.
+
+```bash
+xattr -dr com.apple.quarantine /Applications/Metrics.app
+```
+
+> 공증을 받으려면 Apple Developer Program(연 $99)이 필요합니다. 개인 프로젝트라 적용하지 않았습니다.
+
+---
+
+## 소스에서 실행
+
+설치본 대신 저장소에서 바로 실행하려면:
+
 ```bash
 npm install
 npm start
@@ -188,7 +215,7 @@ npm start
 npm run dist:win
 ```
 
-산출물: `dist/Metrics Setup 1.0.0.exe` (x64 NSIS 설치 관리자)
+산출물: `dist/Metrics Setup 1.1.0.exe` (x64 NSIS 설치 관리자)
 
 ### Windows — 무설치 압축 (.zip)
 
@@ -196,7 +223,7 @@ npm run dist:win
 npm run dist:win:zip
 ```
 
-산출물: `dist/Metrics-1.0.0-win.zip` (x64, 설치 불필요)
+산출물: `dist/Metrics-1.1.0-win.zip` (x64, 설치 불필요)
 
 압축을 해제한 뒤 폴더 안의 `Metrics.exe`를 실행합니다. 실행 파일이 옆의 DLL과 `resources` 디렉터리에 의존하므로 폴더 전체를 함께 유지해야 합니다.
 
@@ -206,20 +233,20 @@ npm run dist:win:zip
 npm run dist:mac
 ```
 
-산출물: `dist/Metrics-1.0.0-universal.dmg` (Apple Silicon · Intel 공용 universal 바이너리)
+산출물: `dist/Metrics-1.1.0-universal.dmg` (Apple Silicon · Intel 공용 universal 바이너리)
 
 ### 코드 서명
 
 배포 파일은 **유료 인증서로 서명되지 않았으며 공증(notarization)도 되어 있지 않습니다.** 따라서 두 운영체제 모두 최초 실행 시 경고가 표시됩니다.
 
 - **Windows** — SmartScreen 경고가 표시됩니다. `추가 정보` → `실행`을 선택합니다.
-- **macOS** — 빌드 시 ad-hoc 서명이 적용됩니다. Apple Silicon에서는 서명이 없으면 실행 자체가 불가능하기 때문입니다. 다만 Gatekeeper는 여전히 확인되지 않은 개발자로 표시하므로, 최초 실행은 앱 **우클릭 → 열기 → 열기**로 승인해야 합니다.
+- **macOS** — 빌드 시 ad-hoc 서명이 적용됩니다. Apple Silicon에서는 서명이 없으면 실행 자체가 불가능하기 때문입니다. 공증은 되어 있지 않아 최초 실행을 Gatekeeper가 막습니다 — [최초 실행 승인](#최초-실행-승인) 참고.
 
 | 플랫폼 | 산출물 |
 |--------|--------|
-| Windows (설치형) | `dist/Metrics Setup 1.0.0.exe` |
-| Windows (무설치) | `dist/Metrics-1.0.0-win.zip` |
-| macOS | `dist/Metrics-1.0.0-universal.dmg` |
+| Windows (설치형) | `dist/Metrics Setup 1.1.0.exe` |
+| Windows (무설치) | `dist/Metrics-1.1.0-win.zip` |
+| macOS | `dist/Metrics-1.1.0-universal.dmg` |
 
 별도의 API 키나 추가 설정 없이 동작합니다.
 
