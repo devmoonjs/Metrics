@@ -6,6 +6,7 @@ contextBridge.exposeInMainWorld('api', {
   resizeWindow: (size) => ipcRenderer.send('resize-window', size),
   notify: (payload) => ipcRenderer.send('notify', payload),
   quit: () => ipcRenderer.send('quit-app'),
+  copyText: (text) => ipcRenderer.send('copy-text', text),
 
   // 캐릭터 레이어
   openPet: (config) => ipcRenderer.send('open-pet', config),

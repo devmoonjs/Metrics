@@ -56,11 +56,27 @@
           <input id="petName" class="no-drag" type="text" maxlength="10" placeholder="내 이름" />
           <button id="netBtn" class="no-drag">연결</button>
         </div>
-        <input id="inviteCode" class="no-drag" type="password" autocomplete="off"
-               placeholder="초대 코드 붙여넣기" />
+        <div class="row">
+          <input id="inviteCode" class="no-drag" type="password" autocomplete="off"
+                 placeholder="초대 코드 붙여넣기" />
+          <button id="copyInvite" class="no-drag" title="초대 코드 복사">복사</button>
+        </div>
         <div class="friend-foot">
           <span id="netState" class="net-state">연결 안 됨</span>
           <button id="makeInvite" class="no-drag link-btn">코드 만들기</button>
+        </div>
+
+        <!-- 방을 여는 사람만 쓴다. 평소에는 접혀 있다.
+             Electron 은 window.prompt() 를 지원하지 않아 패널에 직접 받는다. -->
+        <div id="inviteForm" class="invite-form hidden">
+          <input id="sbUrl" class="no-drag" type="text" autocomplete="off"
+                 placeholder="API URL — Settings → Data API" />
+          <input id="sbKey" class="no-drag" type="password" autocomplete="off"
+                 placeholder="Publishable key — Settings → API Keys" />
+          <div class="friend-foot">
+            <span id="inviteMsg" class="net-state"></span>
+            <button id="inviteGen" class="no-drag">코드 생성</button>
+          </div>
         </div>
       </div>
       <div class="alert-row">
