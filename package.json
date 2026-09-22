@@ -36,6 +36,7 @@
     "files": [
       "main.js",
       "naver.js",
+      "realtime.js",
       "preload.js",
       "index.html",
       "style.css",
@@ -79,5 +80,9 @@
       "createDesktopShortcut": true,
       "shortcutName": "Metrics"
     }
+  },
+  "dependencies": {
+    "@supabase/realtime-js": "^2.116.0",
+    "ws": "^8.21.3"
   }
 }

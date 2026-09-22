@@ -8,6 +8,12 @@ const searchInput = $('searchInput');
 const searchResults = $('searchResults');
 const petMode = $('petMode');
 const petWander = $('petWander');
+const friendBox = $('friendBox');
+const petName = $('petName');
+const inviteCode = $('inviteCode');
+const netBtn = $('netBtn');
+const netState = $('netState');
+const makeInviteBtn = $('makeInvite');
 const watchlistEl = $('watchlist');
 const intervalSelect = $('intervalSelect');
 const themeSelect = $('themeSelect');
@@ -343,6 +349,7 @@ function saveSettings() {
     hideName: hideName.checked, hideCode: hideCode.checked, biz: bizMode.checked,
     surgeOn: surgeOn.checked, surgePct: surgePct.value, osNotify: osNotify.checked,
     petMode: petMode.checked, petWander: petWander.checked,
+    petName: petName.value, inviteCode: inviteCode.value,
   }));
   updatePet();
 }
@@ -362,6 +369,8 @@ function loadSettings() {
     if (c.osNotify !== undefined) osNotify.checked = !!c.osNotify;
     petMode.checked = !!c.petMode;
     petWander.checked = !!c.petWander;
+    if (c.petName) petName.value = c.petName;
+    if (c.inviteCode) inviteCode.value = c.inviteCode;
   } catch (_) { /* ignore */ }
 }
 
@@ -383,9 +392,56 @@ function updatePet() {
 }
 
 petWander.addEventListener('change', saveSettings);
+
+/* ----------------------- 친구 연결 ----------------------- */
+/* 접속 정보는 저장소에 없다. 사용자가 붙여넣은 초대 코드에서 꺼내 쓴다. */
+let netStatus = 'idle';
+
+function renderNet() {
+  friendBox.classList.toggle('hidden', !petMode.checked);
+  const on = netStatus === 'online';
+  netBtn.textContent = on ? '끊기' : '연결';
+  netState.className = 'net-state' + (on ? ' online' : netStatus === 'error' ? ' error' : '');
+  netState.textContent = on ? '친구와 연결됨'
+    : netStatus === 'connecting' ? '연결 중…'
+    : netStatus === 'error' ? (netState.dataset.err || '연결 실패')
+    : '연결 안 됨';
+}
+
+netBtn.addEventListener('click', async () => {
+  if (netStatus === 'online') { window.api.netDisconnect(); return; }
+  const res = await window.api.netConnect({
+    invite: inviteCode.value.trim(),
+    name: petName.value.trim() || '친구',
+  });
+  if (res && !res.ok) { netState.dataset.err = res.error; netStatus = 'error'; renderNet(); }
+  saveSettings();
+});
+
+/* 방장이 코드를 만든다. Supabase 프로젝트 URL 과 anon key 를 입력받아
+   방 코드와 함께 한 줄로 묶는다. 친구는 이 한 줄만 붙여넣으면 된다. */
+makeInviteBtn.addEventListener('click', async () => {
+  const url = prompt('Supabase 프로젝트 URL\n(예: https://xxxx.supabase.co)');
+  if (!url) return;
+  const key = prompt('anon public key');
+  if (!key) return;
+  const res = await window.api.netMakeInvite({ url: url.trim(), key: key.trim() });
+  if (!res.ok) { alert(res.error); return; }
+  inviteCode.value = res.code;
+  saveSettings();
+  alert('초대 코드를 만들었습니다. 입력란의 코드를 복사해 친구에게 전달하세요.');
+});
+
+window.api.onNet((msg) => {
+  if (!msg || msg.t !== 'status') return;
+  netStatus = msg.status;
+  if (msg.detail) netState.dataset.err = msg.detail;
+  renderNet();
+});
 petMode.addEventListener('change', () => {
   if (petMode.checked && watchlist.length) window.api.openPet(petConfig());
-  else window.api.closePet();
+  else { window.api.closePet(); window.api.netDisconnect(); }
+  renderNet();
   saveSettings();
 });
 window.api.onPetClosed(() => { petMode.checked = false; saveSettings(); });
@@ -443,6 +499,7 @@ closeBtn.addEventListener('click', () => window.api.quit());
 
 // 초기화
 loadSettings();
+renderNet();
 renderWatchlist();
 const savedOpacity = Number(localStorage.getItem('bgOpacity'));
 applyOpacity(savedOpacity >= 10 ? savedOpacity : 78);

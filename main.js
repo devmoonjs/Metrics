@@ -1,6 +1,7 @@
 const { app, BrowserWindow, ipcMain, Notification, screen } = require('electron');
 const path = require('path');
 const { fetchQuotes, searchSymbol } = require('./naver');
+const realtime = require('./realtime');
 
 let win;
 let petWin;          // 캐릭터 레이어 (화면 전체를 덮는 투명 창)
@@ -127,12 +128,37 @@ ipcMain.on('pet-control', (_evt, on) => {
   }
 });
 
+/* ----------------------- 친구 연결 (Realtime) ----------------------- */
+/* 접속은 메인에서만 한다. 렌더러 CSP 가 외부 WebSocket 을 막기 때문. */
+function toPet(msg) {
+  if (petWin && !petWin.isDestroyed()) petWin.webContents.send('pet-net', msg);
+  if (win && !win.isDestroyed()) win.webContents.send('pet-net', msg);
+}
+
+ipcMain.handle('net-connect', (_evt, { invite, name }) =>
+  realtime.connect({ invite, name }, toPet));
+
+ipcMain.on('net-disconnect', () => realtime.disconnect());
+
+ipcMain.on('net-send', (_evt, { event, payload }) => realtime.send(event, payload));
+
+ipcMain.handle('net-status', () => ({ status: realtime.getStatus(), id: realtime.getId() }));
+
+// 초대 코드 만들기 — 방을 새로 파거나, 기존 코드의 방을 유지한다
+ipcMain.handle('net-make-invite', (_evt, { url, key, room }) => {
+  try {
+    return { ok: true, code: realtime.makeInvite({ url, key, room: room || realtime.randomRoom() }) };
+  } catch (err) {
+    return { ok: false, error: err.message || String(err) };
+  }
+});
+
 ipcMain.on('quit-app', () => app.quit());
 
 app.whenReady().then(createWindow);
 
 app.on('window-all-closed', () => app.quit());
-app.on('before-quit', () => clearInterval(cursorTimer));
+app.on('before-quit', () => { clearInterval(cursorTimer); realtime.disconnect(); });
 app.on('activate', () => {
   if (BrowserWindow.getAllWindows().length === 0) createWindow();
 });

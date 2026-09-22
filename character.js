@@ -147,14 +147,18 @@ class Actor {
     this.el.classList.add('bump');
   }
 
+  punchFx() {
+    this.el.classList.remove('punching');
+    void this.el.offsetWidth;                 // 리플로우로 애니메이션 재시작
+    this.el.classList.add('punching');
+    setTimeout(() => this.el.classList.remove('punching'), 260);
+  }
+
   punch() {
     const now = performance.now();
     if (now - this.lastPunch < PUNCH_COOLDOWN || this.stunned) return null;
     this.lastPunch = now;
-    this.el.classList.remove('punching');
-    void this.el.offsetWidth;
-    this.el.classList.add('punching');
-    setTimeout(() => this.el.classList.remove('punching'), 260);
+    this.punchFx();
 
     // 바라보는 쪽 사거리 안의 가장 가까운 상대를 때린다
     let best = null;
@@ -165,9 +169,10 @@ class Actor {
       const d = Math.hypot(dx, a.cy - this.cy);
       if (d <= PUNCH_RANGE && (!best || d < best.d)) best = { a, d };
     }
+    if (this.local) window.api.netSend('act', { kind: 'punch' });
     if (best) {
       best.a.hit(this.facing, 1);
-      onHit(best.a, this.id, 'punch');
+      onHit(best.a, this.id, 'punch', this.facing);
     }
     return best ? best.a : null;
   }
@@ -182,6 +187,14 @@ class Actor {
       ownerId: this.id,
     });
     world.balls.push(b);
+    if (this.local) {
+      window.api.netSend('act', {
+        kind: 'ball',
+        nx: b.x / Math.max(1, window.innerWidth - PET_W),
+        ny: b.y / Math.max(1, window.innerHeight - PET_H),
+        vx: b.vx, vy: b.vy,
+      });
+    }
     return b;
   }
 
@@ -309,11 +322,25 @@ class Actor {
         `${lbl('avg')} ${Number(t.avg).toLocaleString()} ${sign}${pl.toFixed(2)}%`;
       this.bubPnl.className = 'bub-pnl ' + (pl > 0 ? 'up' : pl < 0 ? 'down' : '');
       this.setMood(pl > 0 ? 'mood-up' : pl < 0 ? 'mood-down' : null);
+      if (this.local) netSendPnl(Number(pl.toFixed(2)));
     } else {
       this.bubPnl.textContent = q.ratio ? `${q.ratio}%` : '';
       this.bubPnl.className = 'bub-pnl ' + dirCls(q.direction);
       this.setMood(q.direction === 'up' ? 'mood-up' : q.direction === 'down' ? 'mood-down' : null);
     }
+  }
+
+  /* 친구 캐릭터의 말풍선 — 수익률 퍼센트만 받는다.
+     평단가·수량·금액은 전송하지 않으므로 여기서도 표시할 수 없다. */
+  setPeerPnl(pct) {
+    if (this.local || pct == null) return;
+    this.bubble.classList.remove('hidden');
+    this.bubName.textContent = this.name || '';
+    const sign = pct > 0 ? '+' : '';
+    this.bubPrice.textContent = `${sign}${Number(pct).toFixed(2)}%`;
+    this.bubPrice.className = 'bub-price ' + (pct > 0 ? 'up' : pct < 0 ? 'down' : '');
+    this.bubPnl.textContent = '';
+    this.setMood(pct > 0 ? 'mood-up' : pct < 0 ? 'mood-down' : null);
   }
 
   startPolling() {
@@ -396,7 +423,7 @@ class Ball {
       this.immuneUntil.set(a.id, now + 400);
       this.vx = -this.vx * 0.45;
       this.vy = -220;
-      onHit(a, this.ownerId, 'ball');
+      onHit(a, this.ownerId, 'ball', Math.sign(this.vx) || 1);
     }
 
     // 수명이 다했거나 바닥에서 거의 멈추면 사라진다
@@ -421,12 +448,101 @@ const world = {
   local: null,
 };
 
-/* 피격 알림. 판정은 때린 쪽 클라이언트가 하고 결과만 상대에게 보낸다.
-   2단계에서 여기에 네트워크 전송을 붙인다. */
-function onHit(victim, byId, kind) {
-  void victim; void byId; void kind;
-  // TODO(2단계): window.api.petSend({ t: 'hit', id: victim.id, by: byId, kind });
+/* ----------------------- 네트워크 ----------------------- */
+/* 좌표는 정규화(0~1)로 주고받는다. 모니터 해상도가 달라도 같은 위치에 보이도록.
+   위치는 "움직이는 동안에만" 보낸다. 캐릭터가 기본으로 정지해 있으므로
+   가만히 있을 때 트래픽이 0 이 되고, 무료 티어 메시지 한도를 아낄 수 있다. */
+const SEND_HZ = 10;
+let online = false;
+let lastSend = 0;
+let lastSent = null;
+
+const norm = (a) => ({
+  nx: a.x / Math.max(1, window.innerWidth - PET_W),
+  ny: a.y / Math.max(1, window.innerHeight - PET_H),
+});
+
+function pumpState(ts) {
+  const me = world.local;
+  if (!online || !me) return;
+
+  const { nx, ny } = norm(me);
+  const moving = me.walking || Math.abs(me.vx) > 1 || !me.onGround || me.dragging;
+  const changed = !lastSent ||
+    Math.abs(nx - lastSent.nx) > 0.002 || Math.abs(ny - lastSent.ny) > 0.002 ||
+    lastSent.face !== me.facing || lastSent.walk !== me.walking;
+
+  // 움직임이 멈춘 뒤 마지막 한 장만 더 보내고 조용해진다
+  if (!moving && !changed) return;
+  if (ts - lastSend < 1000 / SEND_HZ) return;
+
+  lastSend = ts;
+  lastSent = { nx, ny, face: me.facing, walk: me.walking };
+  window.api.netSend('move', lastSent);
 }
+
+/* 피격은 때린 쪽 클라이언트가 판정하고 결과만 상대에게 알린다. */
+function onHit(victim, byId, kind, dir) {
+  if (!online || !world.local || byId !== world.local.id) return;
+  if (victim.local) return;                     // 내가 나를 때린 건 보낼 필요 없다
+  window.api.netSend('hit', { target: victim.id, kind, dir: dir || 1 });
+}
+
+function netSendPnl(pct) {
+  if (online) window.api.netSend('pnl', { pct });
+}
+
+window.api.onNet((msg) => {
+  if (!msg) return;
+  switch (msg.t) {
+    case 'status':
+      online = msg.status === 'online';
+      if (online) {
+        window.api.netStatus().then((st) => {
+          if (world.local && st) world.local.netId = st.id;
+        });
+      }
+      if (!online) for (const id of [...world.actors.keys()]) if (id !== 'me') removePeer(id);
+      break;
+    case 'peers': {
+      const seen = new Set(['me']);
+      for (const p of msg.peers) { upsertPeer({ id: p.id, name: p.name }); seen.add(p.id); }
+      for (const id of [...world.actors.keys()]) if (!seen.has(id)) removePeer(id);
+      break;
+    }
+    case 'left':
+      removePeer(msg.id);
+      break;
+    case 'move':
+      upsertPeer({ id: msg.id, nx: msg.nx, ny: msg.ny, face: msg.face, walk: msg.walk });
+      break;
+    case 'act': {
+      const a = world.actors.get(msg.id);
+      if (!a) break;
+      if (msg.kind === 'punch') a.punchFx();
+      if (msg.kind === 'ball') {
+        world.balls.push(new Ball({
+          x: msg.nx * (window.innerWidth - PET_W),
+          y: msg.ny * (window.innerHeight - PET_H),
+          vx: msg.vx, vy: msg.vy, ownerId: msg.id,
+        }));
+      }
+      break;
+    }
+    case 'hit': {
+      // 내가 맞았다고 상대가 알려온 경우
+      const me = world.local;
+      if (me && msg.target === me.netId) me.hit(msg.dir || -1, msg.kind === 'ball' ? 0.8 : 1);
+      break;
+    }
+    case 'pnl': {
+      const a = world.actors.get(msg.id);
+      if (a) a.setPeerPnl(msg.pct);
+      break;
+    }
+    default: break;
+  }
+});
 
 /* ----------------------- 입력 ----------------------- */
 const keys = new Set();
@@ -545,6 +661,7 @@ function frame(ts) {
 
   for (const a of world.actors.values()) a.tick(dt, ts, keys);
   for (const b of world.balls) b.tick(dt);
+  pumpState(ts);
 
   if (world.balls.some((b) => b.dead)) {
     world.balls = world.balls.filter((b) => {

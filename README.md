@@ -106,6 +106,38 @@ Themes are selected from the `테마` dropdown. Returns and the hiding options b
 
 ---
 
+## Character mode
+
+Places a character on the desktop with the current price and return of the selected symbol above its head. Enable it from **캐릭터 모드** in the settings panel.
+
+- The character stands still by default. `└ 알아서 돌아다니기` lets it wander across the screen
+- **Click the character** to take control — `← →` to move, `↑` to jump, `F` to punch, `G` to throw a ball, `Esc` to release
+- It can be dragged, and falls back to the floor when released
+- Its expression and body color follow the return
+
+### Sharing with friends
+
+Characters of friends connected to the same room appear on your screen, and you can punch them or hit them with a thrown ball.
+
+Connections use Supabase Realtime. **No connection details are stored in this repository.** Whoever opens the room creates a free project and shares an invite code.
+
+**Room host**
+
+1. Create a project at [supabase.com](https://supabase.com) — the free plan is sufficient
+2. Copy the **Project URL** and **anon public key** from Project Settings → API
+3. Click `코드 만들기` in the settings panel and enter both to generate an invite code
+4. Send that code to your friends
+
+**Friends**
+
+Paste the invite code, enter a name, and click `연결`.
+
+> Only the relative on-screen position (0–1), facing direction, name and **return percentage** are transmitted. Cost basis, quantity and amounts are never sent and stay on each device.
+
+Position is sent 10 times per second only while the character is moving, and nothing is sent while it stands still — which is why the free plan's message allowance is ample.
+
+---
+
 ## Display modes
 
 The **alternate label mode** (`비즈니스 모드`) replaces market terminology with neutral metric terminology, so the overlay reads as a generic dashboard rather than a quote window.

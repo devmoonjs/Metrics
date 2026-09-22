@@ -397,3 +397,52 @@ html, body {
 /* 터미널/빌드: 여러 행 간격 */
 .term .tl { margin-top: 1px; }
 .bld-item { padding-bottom: 2px; }
+
+/* ----------------------- 친구 연결 ----------------------- */
+.friend-box {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 7px;
+  margin-top: 2px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.04);
+}
+.friend-box.hidden { display: none; }
+.friend-box input[type="text"],
+.friend-box input[type="password"] {
+  flex: 1;
+  min-width: 0;
+  padding: 5px 8px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.25);
+  color: #e8eaed;
+  font-size: 12px;
+}
+.friend-box button {
+  padding: 5px 10px;
+  border: none;
+  border-radius: 6px;
+  background: #3b6cf0;
+  color: #fff;
+  font-size: 12px;
+  cursor: pointer;
+}
+.friend-box button:hover { background: #4480ff; }
+.friend-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+.net-state { font-size: 11px; color: rgba(255, 255, 255, 0.5); }
+.net-state.online { color: #6ee7a8; }
+.net-state.error { color: #ff8b84; }
+.link-btn {
+  background: transparent !important;
+  color: rgba(255, 255, 255, 0.55) !important;
+  text-decoration: underline;
+  padding: 2px 0 !important;
+  font-size: 11px !important;
+}
