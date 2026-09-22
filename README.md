@@ -20,6 +20,7 @@
 - **Multiple symbols** — quotes are stacked vertically in a single window
 - **Automatic refresh** — every 30 seconds or every minute
 - **Return on cost basis** — enter an average purchase price per symbol to display the current return
+- **Character mode** — puts a character on your desktop. Join a room with friends and their characters appear on your screen too, where you can punch them or hit them with a thrown ball
 - **Price alerts** — a per-symbol target price with automatic crossing detection in both directions, plus a surge/drop alert on the daily change rate, delivered as native OS notifications
 - **Transparent and draggable** — frameless window, always on top, movable anywhere on screen
 - **Adjustable opacity** — 10–100%
@@ -111,13 +112,32 @@ Themes are selected from the `테마` dropdown. Returns and the hiding options b
 Places a character on the desktop with the current price and return of the selected symbol above its head. Enable it from **캐릭터 모드** in the settings panel.
 
 - The character stands still by default. `└ 알아서 돌아다니기` lets it wander across the screen
-- **Click the character** to take control — `← →` to move, `↑` to jump, `F` to punch, `G` to throw a ball, `Esc` to release
 - It can be dragged, and falls back to the floor when released
-- Its expression and body color follow the return
+- Its expression and body color follow the return — red and smiling when up, blue and glum when down
 
-### Sharing with friends
+**Click the character** to take control and move it with the keyboard.
 
-Characters of friends connected to the same room appear on your screen, and you can punch them or hit them with a thrown ball.
+| Key | Action |
+|-----|--------|
+| `←` `→` / `A` `D` | Move |
+| `↑` `Space` `W` | Jump |
+| `F` | Punch |
+| `G` | Throw a ball |
+| `Esc` | Release control |
+
+### Playing with friends
+
+<img src="screenshots/friends.gif" width="700" alt="Throwing a ball across the screen to hit a distant friend's character" />
+
+**From separate computers, however far apart you are**, joining the same room makes your friends' characters appear on your desktop. Position and movement are shared in real time, and each friend's return is shown above their head.
+
+And you can reach each other.
+
+- `F` — punch someone standing next to you
+- `G` — throw a ball. It arcs across the screen and lands on a character at the far end
+- Getting hit turns the eyes into `××` and knocks the character backwards
+
+Above, the character on the left is me (삼성전자, -16.97%) and the one on the right is 민지 (+1.11%). The thrown ball hits 민지, and 민지 throws one back.
 
 Connections use Supabase Realtime. **No connection details are stored in this repository.** Whoever opens the room creates a free project and shares an invite code.
 
@@ -214,6 +234,7 @@ No API keys or additional configuration are required.
 - **Icons** — run `python3 make-icon.py <source image>` (requires Pillow) to regenerate `build/icon.png`, `icon.ico` and `icon.icns`
 - **Screenshots** — run `npx electron scratch_capture.js`, then `python3 scratch_compose.py`
 - **Demo animation** — run `npx electron scratch_demo.js` (records the interaction against the live app), then `python3 scratch_demo_gif.py`
+- **Friend interaction GIF** — run `npx electron scratch_pet_demo.js`, then `python3 scratch_pet_gif.py`. It opens two character layer windows and relays between them, so the recording goes through the same message path as a real friend connection
 - **Quote source** — the request logic is contained in `fetchQuote` in `main.js` and in `naver.js`
 
 ---
