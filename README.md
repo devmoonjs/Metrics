@@ -1,8 +1,8 @@
 <div align="center">
   <img src="build/icon.png" width="96" alt="Metrics logo" />
   <h1>Metrics</h1>
-  <p>A transparent, always-on-top overlay for real-time stock quotes —<br/>
-  with desktop characters your friends can join, punch and throw balls at.</p>
+  <p>See what your friends are making — and throw a ball at them for it.<br/>
+  Desktop characters carrying each other's returns, on a transparent stock overlay.</p>
   <p><b>English</b> · <a href="README.ko.md">한국어</a></p>
   <img src="screenshots/friends.gif" width="900" alt="A full Mac screen where a ball is thrown at a friend's character" />
   <p><sub>An unmodified recording of a real Mac screen. The ball crosses the screen, hits 민지, and 민지 throws one back.</sub></p>
@@ -12,14 +12,24 @@
 
 ---
 
+## What is this
+
+On its own it is a quote widget — a transparent window in the corner of your screen showing the symbols you follow.
+
+Connect with friends and their characters appear on your desktop. You can tell at a glance who is up and who is down today — a good day turns a character red and smiling, a bad one turns it blue and glum (red means up, following the Korean convention). If you do not like what you see, throw a ball at them.
+
+> **Friend mode takes a little setup.** Everyone needs the app installed, and whoever opens the room has to create a free [Supabase](https://supabase.com) project and share an invite code. The steps are under [Playing with friends](#playing-with-friends).
+
+---
+
 ## Features
 
+- **Play with friends** — join the same room and your friends' characters walk around your desktop carrying their returns. Punch them, or hit them with a thrown ball
 - **Korean and US markets** — KRX, NASDAQ and NYSE symbols
 - **Search by name** — look up `삼성`, `apple` or a ticker code directly; no need to know the symbol code
 - **Multiple symbols** — quotes are stacked vertically in a single window
 - **Automatic refresh** — every 30 seconds or every minute
 - **Return on cost basis** — enter an average purchase price per symbol to display the current return
-- **Character mode** — puts a character on your desktop. Join a room with friends and their characters appear on your screen too, where you can punch them or hit them with a thrown ball
 - **Price alerts** — a per-symbol target price with automatic crossing detection in both directions, plus a surge/drop alert on the daily change rate, delivered as native OS notifications
 - **Transparent and draggable** — frameless window, always on top, movable anywhere on screen
 - **Adjustable opacity** — 10–100%
@@ -144,6 +154,7 @@ Places a character on the desktop with the current price and return of the selec
 - The character stands still by default. `└ 알아서 돌아다니기` lets it wander across the screen
 - It can be dragged, and falls back to the floor when released
 - Its expression and body color follow the return — red and smiling when up, blue and glum when down
+- The **★** on a watchlist row picks which symbol the character shows, and the choice is saved
 
 **Click the character** to take control and move it with the keyboard.
 
@@ -186,6 +197,8 @@ Connections use Supabase Realtime. **No connection details are stored in this re
 Paste the invite code, enter a name, and click `연결`.
 
 > Only the relative on-screen position (0–1), facing direction, name and **return percentage** are transmitted. Cost basis, quantity and amounts are never sent and stay on each device.
+
+Enabling `└ 친구에게 종목명도 공개` also sends the name of the starred symbol, so a friend's bubble reads `민지 / +1.83% / SK하이닉스`. It is off by default, and it is suppressed entirely while `종목명 숨기기` or `비즈니스 모드` is on, regardless of the setting. Amounts and quantities are never sent under any configuration.
 
 Position is sent 10 times per second only while the character is moving, and nothing is sent while it stands still — which is why the free plan's message allowance is ample.
 

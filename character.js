@@ -322,7 +322,7 @@ class Actor {
         `${lbl('avg')} ${Number(t.avg).toLocaleString()} ${sign}${pl.toFixed(2)}%`;
       this.bubPnl.className = 'bub-pnl ' + (pl > 0 ? 'up' : pl < 0 ? 'down' : '');
       this.setMood(pl > 0 ? 'mood-up' : pl < 0 ? 'mood-down' : null);
-      if (this.local) netSendPnl(Number(pl.toFixed(2)));
+      if (this.local) netSendPnl(Number(pl.toFixed(2)), q.name || t.name || '');
     } else {
       this.bubPnl.textContent = q.ratio ? `${q.ratio}%` : '';
       this.bubPnl.className = 'bub-pnl ' + dirCls(q.direction);
@@ -332,14 +332,16 @@ class Actor {
 
   /* 친구 캐릭터의 말풍선 — 수익률 퍼센트만 받는다.
      평단가·수량·금액은 전송하지 않으므로 여기서도 표시할 수 없다. */
-  setPeerPnl(pct) {
+  setPeerPnl(pct, symbol) {
     if (this.local || pct == null) return;
     this.bubble.classList.remove('hidden');
     this.bubName.textContent = this.name || '';
     const sign = pct > 0 ? '+' : '';
     this.bubPrice.textContent = `${sign}${Number(pct).toFixed(2)}%`;
     this.bubPrice.className = 'bub-price ' + (pct > 0 ? 'up' : pct < 0 ? 'down' : '');
-    this.bubPnl.textContent = '';
+    // 상대가 종목명 공개를 켰을 때만 온다
+    this.bubPnl.textContent = symbol || '';
+    this.bubPnl.className = 'bub-pnl';
     this.setMood(pct > 0 ? 'mood-up' : pct < 0 ? 'mood-down' : null);
   }
 
@@ -488,8 +490,11 @@ function onHit(victim, byId, kind, dir) {
   window.api.netSend('hit', { target: victim.id, kind, dir: dir || 1 });
 }
 
-function netSendPnl(pct) {
-  if (online) window.api.netSend('pnl', { pct });
+function netSendPnl(pct, name) {
+  if (!online) return;
+  // 종목명은 설정에서 켰을 때만. 숨기기·비즈니스 모드가 켜져 있으면
+  // renderer 가 shareSymbol 을 false 로 내려보내므로 여기서도 빠진다.
+  window.api.netSend('pnl', cfg.shareSymbol && name ? { pct, name } : { pct });
 }
 
 window.api.onNet((msg) => {
@@ -537,7 +542,7 @@ window.api.onNet((msg) => {
     }
     case 'pnl': {
       const a = world.actors.get(msg.id);
-      if (a) a.setPeerPnl(msg.pct);
+      if (a) a.setPeerPnl(msg.pct, msg.name);
       break;
     }
     default: break;
@@ -699,13 +704,21 @@ function removePeer(id) {
 // 테스트/디버그용 — 더미 캐릭터를 띄워 충돌을 확인한다
 window.__pet = { world, upsertPeer, removePeer, Actor, Ball, localControl, floorY, PET_W, PET_H };
 
+/* 설정에서 고른 대표 종목. 선택이 없거나 목록에서 사라졌으면 첫 번째. */
+function pickTarget() {
+  const list = cfg.watchlist || [];
+  if (!list.length) return null;
+  const key = cfg.symbolKey;
+  return list.find((w) => `${w.market}:${w.queryCode}` === key) || list[0];
+}
+
 /* ----------------------- 시작 ----------------------- */
 async function init() {
   cfg = (await window.api.getPetConfig()) || cfg;
   cfg.watchlist = Array.isArray(cfg.watchlist) ? cfg.watchlist : [];
 
   const me = new Actor({ id: 'me', local: true });
-  me.target = cfg.watchlist[0] || null;
+  me.target = pickTarget();
   world.local = me;
   world.actors.set('me', me);
 
@@ -719,9 +732,9 @@ window.api.onPetConfig((next) => {
   cfg.watchlist = Array.isArray(cfg.watchlist) ? cfg.watchlist : [];
   const me = world.local;
   if (!me) return;
-  me.symIdx = Math.min(me.symIdx, Math.max(0, cfg.watchlist.length - 1));
   const prev = me.target && me.target.queryCode;
-  me.target = cfg.watchlist[me.symIdx] || null;
+  me.target = pickTarget();
+  me.symIdx = Math.max(0, cfg.watchlist.indexOf(me.target));
   if (!me.target || me.target.queryCode !== prev) me.quote = null;
   me.renderBubble();
   if (me.target) me.startPolling();
