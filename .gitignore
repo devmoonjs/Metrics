@@ -1,0 +1,18 @@
+# 의존성
+node_modules/
+
+# 빌드 산출물 (설치파일 등 대용량)
+dist/
+
+# 생성되는 스크린샷 원본 캡처 (screenshots/ 의 합성본만 커밋)
+build/shots/
+
+# AI 에이전트 세션 상태/로그
+.omc/
+
+# 아이콘 스크립트가 만드는 미리보기
+scratch_preview.png
+
+# 로그/OS 부산물
+*.log
+.DS_Store

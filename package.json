@@ -1,0 +1,80 @@
+{
+  "name": "stock-ticker-overlay",
+  "version": "1.0.0",
+  "description": "실시간 주식 시세 투명 플로팅 오버레이 (Electron)",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/devmoonjs/Metrics.git"
+  },
+  "homepage": "https://github.com/devmoonjs/Metrics#readme",
+  "bugs": {
+    "url": "https://github.com/devmoonjs/Metrics/issues"
+  },
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dist:win": "electron-builder --win",
+    "dist:win:portable": "electron-builder --win portable",
+    "dist:win:zip": "electron-builder --win zip --x64",
+    "dist:mac": "electron-builder --mac --universal"
+  },
+  "author": "",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  },
+  "devDependencies": {
+    "electron": "^31.0.0",
+    "electron-builder": "^24.13.3"
+  },
+  "build": {
+    "appId": "com.metrics.overlay",
+    "productName": "Metrics",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "main.js",
+      "naver.js",
+      "preload.js",
+      "index.html",
+      "style.css",
+      "renderer.js",
+      "build/icon.ico",
+      "build/icon.png",
+      "build/icon.icns"
+    ],
+    "compression": "maximum",
+    "afterPack": "build/afterPack.js",
+    "mac": {
+      "target": [
+        "dmg"
+      ],
+      "icon": "build/icon.icns",
+      "category": "public.app-category.finance",
+      "identity": null,
+      "electronLanguages": [
+        "en",
+        "ko"
+      ]
+    },
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "build/icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "shortcutName": "Metrics"
+    }
+  }
+}
