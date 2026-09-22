@@ -6,7 +6,6 @@
   <p><b>English</b> · <a href="README.ko.md">한국어</a></p>
   <img src="screenshots/demo.gif" width="330" alt="Searching for a symbol, adding it and starting the overlay" />
   <p><sub>Searching for 삼성전자, adding it with a cost basis and a target price, and starting the overlay.</sub></p>
-  <img src="screenshots/themes.png" width="760" alt="Theme previews" />
 </div>
 
 > **Note** — the application interface is currently available in Korean only. This README is available in both English and Korean.

@@ -6,7 +6,6 @@
   <p><a href="README.md">English</a> · <b>한국어</b></p>
   <img src="screenshots/demo.gif" width="330" alt="종목 검색부터 오버레이 시작까지" />
   <p><sub>삼성전자를 검색해 추가하고, 평단가와 목표가를 입력한 뒤 오버레이를 시작하는 과정입니다.</sub></p>
-  <img src="screenshots/themes.png" width="760" alt="테마 미리보기" />
 </div>
 
 ---
