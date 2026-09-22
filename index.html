@@ -45,6 +45,40 @@
         <label class="no-drag"><input id="hideCode" type="checkbox" /> 종목코드 숨기기</label>
         <label class="no-drag"><input id="bizMode" type="checkbox" /> 비즈니스 모드 (업무용 워딩)</label>
       </div>
+      <div class="checks">
+        <label class="no-drag"><input id="petMode" type="checkbox" /> 캐릭터 모드 (바탕화면에 띄우기)</label>
+        <label class="no-drag"><input id="petWander" type="checkbox" /> └ 알아서 돌아다니기</label>
+      </div>
+
+      <!-- 친구 연결: 초대 코드 하나로 접속 정보와 방이 전달된다 -->
+      <div id="friendBox" class="friend-box hidden">
+        <div class="row">
+          <input id="petName" class="no-drag" type="text" maxlength="10" placeholder="내 이름" />
+          <button id="netBtn" class="no-drag">연결</button>
+        </div>
+        <div class="row">
+          <input id="inviteCode" class="no-drag" type="password" autocomplete="off"
+                 placeholder="초대 코드 붙여넣기" />
+          <button id="copyInvite" class="no-drag" title="초대 코드 복사">복사</button>
+        </div>
+        <div class="friend-foot">
+          <span id="netState" class="net-state">연결 안 됨</span>
+          <button id="makeInvite" class="no-drag link-btn">코드 만들기</button>
+        </div>
+
+        <!-- 방을 여는 사람만 쓴다. 평소에는 접혀 있다.
+             Electron 은 window.prompt() 를 지원하지 않아 패널에 직접 받는다. -->
+        <div id="inviteForm" class="invite-form hidden">
+          <input id="sbUrl" class="no-drag" type="text" autocomplete="off"
+                 placeholder="API URL — Settings → Data API" />
+          <input id="sbKey" class="no-drag" type="password" autocomplete="off"
+                 placeholder="Publishable key — Settings → API Keys" />
+          <div class="friend-foot">
+            <span id="inviteMsg" class="net-state"></span>
+            <button id="inviteGen" class="no-drag">코드 생성</button>
+          </div>
+        </div>
+      </div>
       <div class="alert-row">
         <label class="no-drag"><input id="surgeOn" type="checkbox" /> 급등락 알림 ±</label>
         <input id="surgePct" class="no-drag" type="text" inputmode="decimal" value="5" maxlength="4" />
