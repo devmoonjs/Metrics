@@ -144,6 +144,7 @@ Places a character on the desktop with the current price and return of the selec
 - The character stands still by default. `└ 알아서 돌아다니기` lets it wander across the screen
 - It can be dragged, and falls back to the floor when released
 - Its expression and body color follow the return — red and smiling when up, blue and glum when down
+- The **★** on a watchlist row picks which symbol the character shows, and the choice is saved
 
 **Click the character** to take control and move it with the keyboard.
 
@@ -186,6 +187,8 @@ Connections use Supabase Realtime. **No connection details are stored in this re
 Paste the invite code, enter a name, and click `연결`.
 
 > Only the relative on-screen position (0–1), facing direction, name and **return percentage** are transmitted. Cost basis, quantity and amounts are never sent and stay on each device.
+
+Enabling `└ 친구에게 종목명도 공개` also sends the name of the starred symbol, so a friend's bubble reads `민지 / +1.83% / SK하이닉스`. It is off by default, and it is suppressed entirely while `종목명 숨기기` or `비즈니스 모드` is on, regardless of the setting. Amounts and quantities are never sent under any configuration.
 
 Position is sent 10 times per second only while the character is moving, and nothing is sent while it stands still — which is why the free plan's message allowance is ample.
 

@@ -458,3 +458,20 @@ html, body {
 .invite-form.hidden { display: none; }
 .friend-box .row { align-items: center; }
 .net-state.ok { color: #6ee7a8; }
+
+/* 캐릭터가 표시할 대표 종목 선택 */
+.wl-pick {
+  flex: 0 0 auto;
+  width: 20px;
+  height: 20px;
+  margin-right: 2px;
+  border: none;
+  border-radius: 5px;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.22);
+  font-size: 12px;
+  line-height: 1;
+  cursor: pointer;
+}
+.wl-pick:hover { color: rgba(255, 255, 255, 0.5); background: rgba(255, 255, 255, 0.06); }
+.wl-pick.on { color: #ffc861; }

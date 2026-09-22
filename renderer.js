@@ -8,6 +8,10 @@ const searchInput = $('searchInput');
 const searchResults = $('searchResults');
 const petMode = $('petMode');
 const petWander = $('petWander');
+const shareSymbol = $('shareSymbol');
+/* 캐릭터가 표시할 대표 종목. watchlist 의 key 로 들고 있어야
+   종목을 지우거나 순서가 바뀌어도 선택이 따라간다. */
+let petSymbolKey = null;
 const friendBox = $('friendBox');
 const petName = $('petName');
 const inviteCode = $('inviteCode');
@@ -289,6 +293,8 @@ function renderWatchlist() {
   watchlistEl.innerHTML = watchlist.map((w, i) =>
     `<div class="wl-item">
       <div class="wl-head">
+        <button class="wl-pick no-drag${petSymbolKey === w.key ? ' on' : ''}" data-i="${i}"
+                title="캐릭터가 이 종목을 표시합니다">★</button>
         <span class="wl-flag">${flag(w.nation)}</span>
         <span class="wl-name" title="${esc(w.name)}">${esc(w.name)}</span>
         <button class="wl-del no-drag" data-i="${i}" title="삭제">✕</button>
@@ -355,6 +361,7 @@ function saveSettings() {
     hideName: hideName.checked, hideCode: hideCode.checked, biz: bizMode.checked,
     surgeOn: surgeOn.checked, surgePct: surgePct.value, osNotify: osNotify.checked,
     petMode: petMode.checked, petWander: petWander.checked,
+    petSymbolKey, shareSymbol: shareSymbol.checked,
     petName: petName.value, inviteCode: inviteCode.value,
   }));
   updatePet();
@@ -375,6 +382,8 @@ function loadSettings() {
     if (c.osNotify !== undefined) osNotify.checked = !!c.osNotify;
     petMode.checked = !!c.petMode;
     petWander.checked = !!c.petWander;
+    petSymbolKey = c.petSymbolKey || null;
+    shareSymbol.checked = !!c.shareSymbol;
     if (c.petName) petName.value = c.petName;
     if (c.inviteCode) inviteCode.value = c.inviteCode;
   } catch (_) { /* ignore */ }
@@ -389,7 +398,15 @@ function petConfig() {
     biz: bizMode.checked,
     hideName: hideName.checked,
     wander: petWander.checked,
+    symbolKey: effectivePetSymbol(),
+    shareSymbol: shareSymbol.checked && !hideName.checked && !bizMode.checked,
   };
+}
+
+/* 선택한 종목이 없거나 목록에서 사라졌으면 첫 번째로 되돌린다 */
+function effectivePetSymbol() {
+  if (petSymbolKey && watchlist.some((w) => w.key === petSymbolKey)) return petSymbolKey;
+  return watchlist.length ? watchlist[0].key : null;
 }
 
 // 설정이 바뀔 때마다 캐릭터에도 반영한다 (켜져 있을 때만).
@@ -398,6 +415,7 @@ function updatePet() {
 }
 
 petWander.addEventListener('change', saveSettings);
+shareSymbol.addEventListener('change', saveSettings);
 
 /* ----------------------- 친구 연결 ----------------------- */
 /* 접속 정보는 저장소에 없다. 사용자가 붙여넣은 초대 코드에서 꺼내 쓴다. */
@@ -501,6 +519,12 @@ searchResults.addEventListener('click', (e) => {
   if (el) addSymbol(searchResults._items[Number(el.dataset.i)]);
 });
 watchlistEl.addEventListener('click', (e) => {
+  const pick = e.target.closest('.wl-pick');
+  if (pick) {
+    const w = watchlist[Number(pick.dataset.i)];
+    if (w) { petSymbolKey = w.key; renderWatchlist(); saveSettings(); }
+    return;
+  }
   const del = e.target.closest('.wl-del');
   if (del) {
     watchlist.splice(Number(del.dataset.i), 1);
