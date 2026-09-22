@@ -126,7 +126,7 @@ Places a character on the desktop with the current price and return of the selec
 
 ### Playing with friends
 
-<img src="screenshots/friends.gif" width="900" alt="Throwing a ball across a real desktop to hit a friend's character" />
+<img src="screenshots/friends.gif" width="900" alt="A full Mac screen; near the bottom right, a ball is thrown at a friend's character" />
 
 **From separate computers, however far apart you are**, joining the same room makes your friends' characters appear on your desktop. Position and movement are shared in real time, and each friend's return is shown above their head.
 
@@ -136,7 +136,7 @@ And you can reach each other.
 - `G` — throw a ball. It arcs across the screen and lands on a character at the far end
 - Getting hit turns the eyes into `××` and knocks the character backwards
 
-The clip above is a recording of a real desktop, unmodified. The character on the left is me (삼성전자, -16.52%, blue) and the one on the right is 민지 (+1.83%, red). The thrown ball travels across the screen and hits 민지, who throws one back and hits me.
+The clip above is an unmodified recording of a full Mac screen — the characters float above an ordinary browser window. The one on the left is me (삼성전자, -16.52%, blue) and the one on the right is 민지 (+1.83%, red). The thrown ball travels across the screen and hits 민지, who throws one back and hits me.
 
 Connections use Supabase Realtime. **No connection details are stored in this repository.** Whoever opens the room creates a free project and shares an invite code.
 
