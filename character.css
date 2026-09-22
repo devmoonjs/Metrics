@@ -1,0 +1,156 @@
+/* 캐릭터 레이어 — 화면 전체를 덮는 투명 창.
+   배경은 완전 투명이어야 클릭 통과가 자연스럽다. */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body {
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  overflow: hidden;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Malgun Gothic",
+               "Apple SD Gothic Neo", sans-serif;
+  cursor: default;
+  user-select: none;
+}
+
+#stage { position: relative; width: 100%; height: 100%; }
+
+/* ----------------------- 캐릭터 ----------------------- */
+.pet {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 80px;
+  will-change: transform;
+}
+
+/* 걸을 때 위아래로 살짝 통통 튄다 */
+.body-wrap {
+  transform-origin: 50% 100%;
+  animation: bob 0.52s ease-in-out infinite;
+  animation-play-state: paused;
+}
+.pet.walking .body-wrap { animation-play-state: running; }
+
+@keyframes bob {
+  0%, 100% { transform: translateY(0) scaleY(1); }
+  30%      { transform: translateY(-5px) scaleY(1.04); }
+  60%      { transform: translateY(0) scaleY(0.97); }
+}
+
+/* 진행 방향으로 몸을 뒤집는다 */
+.pet.face-left .body-wrap { transform: scaleX(-1); }
+.pet.face-left .bubble { transform: translateX(-50%) scaleX(1); }
+
+.char { display: block; overflow: visible; }
+
+.body {
+  fill: #6f8cff;
+  stroke: rgba(10, 14, 28, 0.35);
+  stroke-width: 2;
+  transition: fill 0.5s ease;
+}
+.shadow { fill: rgba(10, 16, 30, 0.22); }
+.foot { fill: #5a76e8; }
+
+/* 발 번갈아 딛기 */
+.pet.walking .foot-l { animation: stepA 0.52s ease-in-out infinite; }
+.pet.walking .foot-r { animation: stepB 0.52s ease-in-out infinite; }
+@keyframes stepA { 0%,100% { transform: translateX(0); } 50% { transform: translateX(5px); } }
+@keyframes stepB { 0%,100% { transform: translateX(0); } 50% { transform: translateX(-5px); } }
+
+.eye { fill: #12182b; }
+.glint { fill: #fff; opacity: 0.9; }
+.mouth { fill: none; stroke: #12182b; stroke-width: 2.4; stroke-linecap: round; }
+.blush { fill: rgba(255, 120, 120, 0.42); opacity: 0; transition: opacity 0.4s ease; }
+
+/* 눈 깜빡임 */
+.eyes { transform-origin: 50% 34px; animation: blink 5.4s infinite; }
+@keyframes blink {
+  0%, 92%, 100% { transform: scaleY(1); }
+  95%           { transform: scaleY(0.08); }
+}
+
+/* --- 기분: 수익률에 따라 표정과 색이 바뀐다 --- */
+.pet.mood-up   .body  { fill: #ff7a6e; }
+.pet.mood-up   .foot  { fill: #e8685d; }
+.pet.mood-up   .mouth { d: path("M33 44 Q40 51 47 44"); }
+.pet.mood-up   .blush { opacity: 1; }
+
+.pet.mood-down .body  { fill: #5f7fd6; }
+.pet.mood-down .foot  { fill: #4d6ac0; }
+.pet.mood-down .mouth { d: path("M34 48 Q40 43 46 48"); }
+.pet.mood-down .eye   { ry: 3.4; }
+
+/* --- 목표가 도달 등 이벤트 --- */
+.pet.cheer .body-wrap { animation: cheer 0.45s ease-in-out 4; }
+@keyframes cheer {
+  0%, 100% { transform: translateY(0) scale(1); }
+  40%      { transform: translateY(-22px) scale(1.06, 0.94); }
+}
+
+/* ----------------------- 말풍선 ----------------------- */
+.bubble {
+  position: absolute;
+  left: 50%;
+  bottom: 78px;
+  transform: translateX(-50%);
+  min-width: 108px;
+  padding: 7px 11px 8px;
+  border-radius: 12px;
+  background: rgba(20, 23, 32, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 6px 18px rgba(8, 12, 22, 0.42);
+  text-align: center;
+  white-space: nowrap;
+  transition: opacity 0.35s ease;
+}
+.bubble::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -6px;
+  width: 12px;
+  height: 12px;
+  margin-left: -6px;
+  background: rgba(20, 23, 32, 0.9);
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  transform: rotate(45deg);
+}
+.bubble.hidden { opacity: 0; }
+
+.bub-name  { font-size: 11px; color: rgba(255, 255, 255, 0.62); margin-bottom: 1px; }
+.bub-price { font-size: 16px; font-weight: 700; color: #e8eaed; letter-spacing: -0.2px; }
+.bub-pnl   { font-size: 11px; margin-top: 2px; color: rgba(255, 255, 255, 0.55); }
+
+.up   { color: #ff6b62 !important; }
+.down { color: #6b9bff !important; }
+
+/* ----------------------- 조작 버튼 ----------------------- */
+/* 캐릭터에 마우스를 올리면 나타난다 */
+.tools {
+  position: absolute;
+  left: 50%;
+  bottom: -14px;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 5px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+.pet.hovered .tools { opacity: 1; pointer-events: auto; }
+
+.tool {
+  width: 22px;
+  height: 22px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(24, 28, 38, 0.92);
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 11px;
+  line-height: 1;
+  cursor: pointer;
+}
+.tool:hover { background: rgba(70, 110, 220, 0.95); color: #fff; }

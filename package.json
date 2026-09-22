@@ -40,6 +40,9 @@
       "index.html",
       "style.css",
       "renderer.js",
+      "character.js",
+      "character.css",
+      "character.html",
       "build/icon.ico",
       "build/icon.png",
       "build/icon.icns"
