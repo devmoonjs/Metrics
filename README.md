@@ -124,8 +124,8 @@ Connections use Supabase Realtime. **No connection details are stored in this re
 **Room host**
 
 1. Create a project at [supabase.com](https://supabase.com) — the free plan is sufficient
-2. Copy both values from the **Connect** button at the top of the dashboard, or from **Settings → API Keys**
-   - **Project URL** — `https://xxxxxxxx.supabase.co`
+2. Copy both values from the **Connect** button at the top of the dashboard, or from **Settings**
+   - **Project URL** — the `API URL` / `Project URL` under **Settings → Data API**, in the form `https://xxxxxxxx.supabase.co`. A trailing path such as `/rest/v1` can be pasted as-is
    - **Publishable key** — starts with `sb_publishable_`
      (Older projects have an `anon` `public` key instead — a long string starting with `eyJ`, which works as-is)
 3. Click `코드 만들기` in the settings panel and enter both to generate an invite code
