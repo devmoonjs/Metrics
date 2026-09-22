@@ -114,6 +114,19 @@ ipcMain.on('pet-interactive', (_evt, on) => {
   if (petWin && !petWin.isDestroyed()) petWin.setIgnoreMouseEvents(!on, { forward: true });
 });
 
+// 조종 모드일 때만 레이어 창이 키보드 포커스를 가진다.
+// 평소에는 focusable: false 라 다른 작업에 끼어들지 않는다.
+ipcMain.on('pet-control', (_evt, on) => {
+  if (!petWin || petWin.isDestroyed()) return;
+  if (on) {
+    petWin.setFocusable(true);
+    petWin.focus();
+  } else {
+    petWin.blur();
+    petWin.setFocusable(false);
+  }
+});
+
 ipcMain.on('quit-app', () => app.quit());
 
 app.whenReady().then(createWindow);
