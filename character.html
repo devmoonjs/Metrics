@@ -8,16 +8,19 @@
   <link rel="stylesheet" href="character.css" />
 </head>
 <body>
-  <!-- 화면 전체를 덮는 투명 레이어. 클릭은 뒤로 통과하고, 캐릭터 위에서만 마우스를 받는다. -->
-  <div id="stage">
-    <div id="pet" class="pet">
+  <!-- 화면 전체를 덮는 투명 레이어. 클릭은 뒤로 통과하고, 캐릭터 위에서만 마우스를 받는다.
+       캐릭터는 Actor 인스턴스마다 아래 템플릿을 복제해 만든다. -->
+  <div id="stage"></div>
+
+  <template id="actorTpl">
+    <div class="pet">
       <!-- 머리 위: 조종 안내 + 대표 종목 말풍선 (아래에서 위로 쌓인다) -->
       <div class="above">
-        <div class="hint">← → 이동 · ↑ 점프 · Esc 해제</div>
-        <div id="bubble" class="bubble hidden">
-          <div class="bub-name" id="bubName">—</div>
-          <div class="bub-price" id="bubPrice">—</div>
-          <div class="bub-pnl" id="bubPnl"></div>
+        <div class="hint">← → 이동 · ↑ 점프 · F 때리기 · G 공 던지기 · Esc 해제</div>
+        <div class="bubble hidden">
+          <div class="bub-name">—</div>
+          <div class="bub-price">—</div>
+          <div class="bub-pnl"></div>
         </div>
       </div>
 
@@ -35,12 +38,19 @@
             C 68 54 56 64 40 64
             C 24 64 12 54 12 38
             C 12 22 22 8 40 8 Z" />
+          <!-- 때릴 때 앞으로 뻗는 주먹 -->
+          <ellipse class="fist" cx="64" cy="42" rx="8" ry="7.5" />
           <g class="face">
             <g class="eyes">
               <ellipse class="eye eye-l" cx="30" cy="34" rx="4.4" ry="5.2" />
               <ellipse class="eye eye-r" cx="50" cy="34" rx="4.4" ry="5.2" />
               <circle class="glint glint-l" cx="31.6" cy="32.2" r="1.5" />
               <circle class="glint glint-r" cx="51.6" cy="32.2" r="1.5" />
+            </g>
+            <!-- 맞으면 눈이 ×× 로 바뀐다 -->
+            <g class="ko-eyes">
+              <path d="M25 30 L35 38 M35 30 L25 38" />
+              <path d="M45 30 L55 38 M55 30 L45 38" />
             </g>
             <path class="mouth" d="M34 45 Q40 49 46 45" />
             <ellipse class="blush blush-l" cx="22" cy="43" rx="4.5" ry="2.8" />
@@ -49,13 +59,18 @@
         </svg>
       </div>
 
-      <!-- 캐릭터에 마우스를 올렸을 때만 나타난다 -->
+      <!-- 친구 캐릭터 이름표 -->
+      <div class="tag"></div>
+
+      <!-- 캐릭터에 마우스를 올렸을 때만 나타난다 (내 캐릭터 전용) -->
       <div class="tools">
         <button class="tool" data-act="next" title="다음 종목">▸</button>
         <button class="tool" data-act="close" title="닫기">✕</button>
       </div>
     </div>
-  </div>
+  </template>
+
+  <template id="ballTpl"><div class="ball"></div></template>
 
   <script src="character.js"></script>
 </body>
