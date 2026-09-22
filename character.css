@@ -23,6 +23,9 @@ html, body {
   width: 80px;
   will-change: transform;
 }
+/* 친구 캐릭터는 내 캐릭터 뒤에 깔린다 */
+.pet.remote { z-index: 1; }
+.pet:not(.remote) { z-index: 2; }
 
 /* 걸을 때 위아래로 살짝 통통 튄다 */
 .body-wrap {
@@ -125,6 +128,69 @@ html, body {
 .hint { display: none; }
 .pet.controlled .hint { display: block; opacity: 1; }
 
+/* --- 때리기: 앞으로 주먹이 뻗어 나간다 --- */
+.fist { fill: currentColor; color: #5a76e8; opacity: 0; transition: fill 0.5s ease; }
+.pet.mood-up   .fist { color: #e8685d; }
+.pet.mood-down .fist { color: #4d6ac0; }
+.pet.punching .fist { animation: jab 0.26s ease-out; }
+@keyframes jab {
+  0%   { opacity: 0; transform: translateX(0); }
+  35%  { opacity: 1; transform: translateX(14px); }
+  100% { opacity: 0; transform: translateX(0); }
+}
+
+/* --- 맞았을 때 --- */
+.ko-eyes { display: none; }
+.ko-eyes path { stroke: #12182b; stroke-width: 2.6; stroke-linecap: round; fill: none; }
+.pet.stunned .eyes { display: none; }
+.pet.stunned .ko-eyes { display: block; }
+.pet.stunned .mouth { d: path("M33 48 Q40 42 47 48"); }
+.pet.bump .body-wrap { animation: bump 0.34s ease-out; }
+@keyframes bump {
+  0%   { transform: scale(1.18, 0.82) rotate(0deg); }
+  45%  { transform: scale(0.9, 1.1) rotate(-9deg); }
+  100% { transform: scale(1) rotate(0deg); }
+}
+/* 뒤집힌 상태에서 맞아도 방향이 유지되도록 */
+.pet.face-left.bump .body-wrap { animation-name: bumpL; }
+@keyframes bumpL {
+  0%   { transform: scaleX(-1) scale(1.18, 0.82) rotate(0deg); }
+  45%  { transform: scaleX(-1) scale(0.9, 1.1) rotate(-9deg); }
+  100% { transform: scaleX(-1); }
+}
+
+/* --- 공 --- */
+.ball {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 34% 30%, #fff3b0, #ffb648 58%, #e08a20);
+  box-shadow: 0 2px 6px rgba(20, 14, 0, 0.35);
+  z-index: 3;
+  will-change: transform;
+}
+
+/* --- 친구 이름표 --- */
+.tag {
+  position: absolute;
+  left: 50%;
+  bottom: -13px;
+  transform: translateX(-50%);
+  padding: 1px 6px;
+  border-radius: 6px;
+  background: rgba(20, 23, 32, 0.85);
+  color: var(--tint, rgba(255, 255, 255, 0.8));
+  font-size: 8px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.pet:not(.remote) .tag { display: none; }
+/* 친구 캐릭터는 테두리 색으로 구분한다 (몸 색은 수익률이 쓴다) */
+.pet.remote .body { stroke: var(--tint, rgba(10, 14, 28, 0.35)); stroke-width: 2.4; }
+
 /* ----------------------- 말풍선 ----------------------- */
 /* 머리 위 스택: 힌트가 위, 말풍선이 아래 */
 .above {
@@ -186,6 +252,7 @@ html, body {
   transition: opacity 0.2s ease;
 }
 .pet.hovered .tools { opacity: 1; pointer-events: auto; }
+.pet.remote .tools, .pet.remote .hint, .pet.remote .ring { display: none; }
 
 .tool {
   width: 22px;
