@@ -14,6 +14,12 @@ const inviteCode = $('inviteCode');
 const netBtn = $('netBtn');
 const netState = $('netState');
 const makeInviteBtn = $('makeInvite');
+const copyInviteBtn = $('copyInvite');
+const inviteForm = $('inviteForm');
+const sbUrl = $('sbUrl');
+const sbKey = $('sbKey');
+const inviteMsg = $('inviteMsg');
+const inviteGen = $('inviteGen');
 const watchlistEl = $('watchlist');
 const intervalSelect = $('intervalSelect');
 const themeSelect = $('themeSelect');
@@ -418,18 +424,50 @@ netBtn.addEventListener('click', async () => {
   saveSettings();
 });
 
-/* 방장이 코드를 만든다. Supabase 프로젝트 URL 과 anon key 를 입력받아
-   방 코드와 함께 한 줄로 묶는다. 친구는 이 한 줄만 붙여넣으면 된다. */
-makeInviteBtn.addEventListener('click', async () => {
-  const url = prompt('Supabase 프로젝트 URL\nSettings → Data API 의 API URL\n(예: https://xxxx.supabase.co)');
-  if (!url) return;
-  const key = prompt('Publishable key (sb_publishable_...)\n또는 예전 프로젝트면 anon public key');
-  if (!key) return;
-  const res = await window.api.netMakeInvite({ url: url.trim(), key: key.trim() });
-  if (!res.ok) { alert(res.error); return; }
+/* 방장이 코드를 만든다. Supabase API URL 과 공개 키를 방 이름과 함께
+   한 줄로 묶는다. 친구는 이 한 줄만 붙여넣으면 된다.
+   Electron 은 window.prompt() 를 지원하지 않으므로 패널에서 직접 받는다. */
+function setInviteMsg(text, kind) {
+  inviteMsg.textContent = text || '';
+  inviteMsg.className = 'net-state' + (kind ? ` ${kind}` : '');
+}
+
+makeInviteBtn.addEventListener('click', () => {
+  const opening = inviteForm.classList.contains('hidden');
+  inviteForm.classList.toggle('hidden', !opening);
+  makeInviteBtn.textContent = opening ? '접기' : '코드 만들기';
+  if (opening) { setInviteMsg(''); sbUrl.focus(); }
+  fitWindow();
+});
+
+inviteGen.addEventListener('click', async () => {
+  const url = sbUrl.value.trim();
+  const key = sbKey.value.trim();
+  if (!url || !key) { setInviteMsg('두 칸을 모두 채워주세요', 'error'); return; }
+
+  const res = await window.api.netMakeInvite({ url, key });
+  if (!res.ok) { setInviteMsg(res.error, 'error'); return; }
+
   inviteCode.value = res.code;
+  // 원본 값은 코드 안에 들어갔으므로 화면에 남겨두지 않는다
+  sbUrl.value = '';
+  sbKey.value = '';
   saveSettings();
-  alert('초대 코드를 만들었습니다. 입력란의 코드를 복사해 친구에게 전달하세요.');
+  setInviteMsg('');
+  inviteForm.classList.add('hidden');
+  makeInviteBtn.textContent = '코드 만들기';
+  window.api.copyText(res.code);
+  netState.dataset.err = '';
+  netState.className = 'net-state ok';
+  netState.textContent = '초대 코드를 복사했습니다';
+  fitWindow();
+});
+
+copyInviteBtn.addEventListener('click', () => {
+  if (!inviteCode.value) { netState.textContent = '복사할 코드가 없습니다'; return; }
+  window.api.copyText(inviteCode.value);
+  netState.className = 'net-state ok';
+  netState.textContent = '초대 코드를 복사했습니다';
 });
 
 window.api.onNet((msg) => {

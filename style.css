@@ -446,3 +446,15 @@ html, body {
   padding: 2px 0 !important;
   font-size: 11px !important;
 }
+
+/* 초대 코드 생성 폼 — 방을 여는 사람만 펼친다 */
+.invite-form {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding-top: 6px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+.invite-form.hidden { display: none; }
+.friend-box .row { align-items: center; }
+.net-state.ok { color: #6ee7a8; }

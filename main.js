@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain, Notification, screen } = require('electron');
+const { app, BrowserWindow, ipcMain, Notification, screen, clipboard } = require('electron');
 const path = require('path');
 const { fetchQuotes, searchSymbol } = require('./naver');
 const realtime = require('./realtime');
@@ -152,6 +152,9 @@ ipcMain.handle('net-make-invite', (_evt, { url, key, room }) => {
     return { ok: false, error: err.message || String(err) };
   }
 });
+
+// navigator.clipboard 는 창이 포커스를 가져야만 동작해서 불안정하다. 메인에서 쓴다.
+ipcMain.on('copy-text', (_evt, text) => clipboard.writeText(String(text || '')));
 
 ipcMain.on('quit-app', () => app.quit());
 
