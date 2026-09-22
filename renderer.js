@@ -423,7 +423,7 @@ netBtn.addEventListener('click', async () => {
 makeInviteBtn.addEventListener('click', async () => {
   const url = prompt('Supabase 프로젝트 URL\n(예: https://xxxx.supabase.co)');
   if (!url) return;
-  const key = prompt('anon public key');
+  const key = prompt('Publishable key (sb_publishable_...)\n또는 예전 프로젝트면 anon public key');
   if (!key) return;
   const res = await window.api.netMakeInvite({ url: url.trim(), key: key.trim() });
   if (!res.ok) { alert(res.error); return; }
