@@ -122,8 +122,8 @@ npm start
 **방을 여는 사람**
 
 1. [supabase.com](https://supabase.com)에서 프로젝트를 만듭니다 (무료 플랜으로 충분합니다)
-2. 대시보드 상단의 **Connect** 버튼, 또는 **Settings → API Keys**에서 두 값을 복사합니다
-   - **Project URL** — `https://xxxxxxxx.supabase.co`
+2. 대시보드 상단의 **Connect** 버튼, 또는 **Settings**에서 두 값을 복사합니다
+   - **Project URL** — **Settings → Data API**의 `API URL` 또는 `Project URL`입니다. `https://xxxxxxxx.supabase.co` 형태이며, `/rest/v1` 같은 경로가 붙어 있어도 그대로 붙여넣으면 됩니다
    - **Publishable key** — `sb_publishable_`로 시작합니다
      (예전에 만든 프로젝트라면 `anon` `public` 키가 대신 있습니다. `eyJ`로 시작하는 긴 문자열이며 그대로 쓰면 됩니다)
 3. 설정의 `코드 만들기`를 눌러 둘을 입력하면 초대 코드가 생성됩니다

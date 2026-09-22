@@ -19,10 +19,30 @@ let onEvent = () => {};
 let status = 'idle';        // idle | connecting | online | error
 
 /* ----------------------- 초대 코드 ----------------------- */
-/* { u: 프로젝트 URL, k: anon key, r: 방 이름 } 을 base64url 로 묶은 한 줄 문자열. */
+/* 대시보드에서 복사한 주소는 그냥 https://xxx.supabase.co 일 때도 있고
+   https://xxx.supabase.co/rest/v1 처럼 경로가 붙어 있을 때도 있다.
+   어느 쪽을 붙여넣어도 되도록 호스트까지만 남긴다. */
+function normalizeUrl(input) {
+  let raw = String(input || '').trim();
+  if (!raw) throw new Error('프로젝트 URL 이 비어 있습니다');
+  if (!/^https?:\/\//i.test(raw)) raw = `https://${raw}`;
+
+  let host;
+  try {
+    host = new URL(raw).host;
+  } catch (_) {
+    throw new Error('프로젝트 URL 형식이 올바르지 않습니다');
+  }
+  if (!/^[\w.-]+\.[a-z]{2,}$/i.test(host)) {
+    throw new Error('프로젝트 URL 형식이 올바르지 않습니다 (예: https://xxxx.supabase.co)');
+  }
+  return `https://${host}`;
+}
+
+/* { u: 프로젝트 URL, k: 공개 키, r: 방 이름 } 을 base64url 로 묶은 한 줄 문자열. */
 function makeInvite({ url, key, room }) {
   assertPublicKey(key);
-  const json = JSON.stringify({ u: String(url).replace(/\/+$/, ''), k: key, r: room });
+  const json = JSON.stringify({ u: normalizeUrl(url), k: key, r: room });
   return Buffer.from(json, 'utf8').toString('base64url');
 }
 
@@ -65,9 +85,8 @@ function parseInvite(code) {
     throw new Error('초대 코드 형식이 올바르지 않습니다');
   }
   if (!obj || !obj.u || !obj.k || !obj.r) throw new Error('초대 코드에 빠진 항목이 있습니다');
-  if (!/^https:\/\/[\w.-]+$/.test(obj.u)) throw new Error('초대 코드의 주소가 올바르지 않습니다');
   assertPublicKey(obj.k);
-  return { url: obj.u, key: obj.k, room: String(obj.r) };
+  return { url: normalizeUrl(obj.u), key: obj.k, room: String(obj.r) };
 }
 
 const randomRoom = () => Math.random().toString(36).slice(2, 8) + Math.random().toString(36).slice(2, 6);
@@ -178,7 +197,7 @@ function send(event, payload) {
 }
 
 module.exports = {
-  connect, disconnect, send, makeInvite, parseInvite, randomRoom, assertPublicKey,
+  connect, disconnect, send, makeInvite, parseInvite, randomRoom, assertPublicKey, normalizeUrl,
   getStatus: () => status,
   getId: () => myId,
 };

@@ -421,7 +421,7 @@ netBtn.addEventListener('click', async () => {
 /* 방장이 코드를 만든다. Supabase 프로젝트 URL 과 anon key 를 입력받아
    방 코드와 함께 한 줄로 묶는다. 친구는 이 한 줄만 붙여넣으면 된다. */
 makeInviteBtn.addEventListener('click', async () => {
-  const url = prompt('Supabase 프로젝트 URL\n(예: https://xxxx.supabase.co)');
+  const url = prompt('Supabase 프로젝트 URL\nSettings → Data API 의 API URL\n(예: https://xxxx.supabase.co)');
   if (!url) return;
   const key = prompt('Publishable key (sb_publishable_...)\n또는 예전 프로젝트면 anon public key');
   if (!key) return;
