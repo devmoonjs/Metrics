@@ -124,9 +124,14 @@ Connections use Supabase Realtime. **No connection details are stored in this re
 **Room host**
 
 1. Create a project at [supabase.com](https://supabase.com) — the free plan is sufficient
-2. Copy the **Project URL** and **anon public key** from Project Settings → API
+2. Copy both values from the **Connect** button at the top of the dashboard, or from **Settings → API Keys**
+   - **Project URL** — `https://xxxxxxxx.supabase.co`
+   - **Publishable key** — starts with `sb_publishable_`
+     (Older projects have an `anon` `public` key instead — a long string starting with `eyJ`, which works as-is)
 3. Click `코드 만들기` in the settings panel and enter both to generate an invite code
 4. Send that code to your friends
+
+> **Never use a key starting with `sb_secret_`, or a `service_role` key.** Such a key bypasses every security policy, and the invite code is meant to be handed to friends, so it would leak directly. The app rejects these on entry, but it is better not to copy one in the first place.
 
 **Friends**
 

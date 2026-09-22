@@ -21,8 +21,38 @@ let status = 'idle';        // idle | connecting | online | error
 /* ----------------------- 초대 코드 ----------------------- */
 /* { u: 프로젝트 URL, k: anon key, r: 방 이름 } 을 base64url 로 묶은 한 줄 문자열. */
 function makeInvite({ url, key, room }) {
+  assertPublicKey(key);
   const json = JSON.stringify({ u: String(url).replace(/\/+$/, ''), k: key, r: room });
   return Buffer.from(json, 'utf8').toString('base64url');
+}
+
+/* 초대 코드는 친구에게 전달되는 값이다. secret 키가 들어가면 그대로 유출되므로
+   공개용 키(publishable / 레거시 anon)만 받는다.
+   - 신형: sb_publishable_... (공개) / sb_secret_... (비공개)
+   - 레거시: JWT. payload 의 role 이 anon 이면 공개, service_role 이면 비공개 */
+function assertPublicKey(key) {
+  const k = String(key || '').trim();
+  if (!k) throw new Error('키가 비어 있습니다');
+
+  if (k.startsWith('sb_secret_')) {
+    throw new Error('secret 키는 쓸 수 없습니다. publishable 키를 사용하세요');
+  }
+  if (k.startsWith('sb_publishable_')) return k;
+
+  // 레거시 JWT
+  if (k.startsWith('eyJ')) {
+    try {
+      const payload = JSON.parse(Buffer.from(k.split('.')[1], 'base64').toString('utf8'));
+      if (payload.role === 'service_role') {
+        throw new Error('service_role 키는 쓸 수 없습니다. anon public 키를 사용하세요');
+      }
+      return k;
+    } catch (err) {
+      if (/service_role/.test(err.message)) throw err;
+      throw new Error('키 형식을 알 수 없습니다');
+    }
+  }
+  throw new Error('키 형식을 알 수 없습니다. publishable 키 또는 anon public 키여야 합니다');
 }
 
 function parseInvite(code) {
@@ -36,6 +66,7 @@ function parseInvite(code) {
   }
   if (!obj || !obj.u || !obj.k || !obj.r) throw new Error('초대 코드에 빠진 항목이 있습니다');
   if (!/^https:\/\/[\w.-]+$/.test(obj.u)) throw new Error('초대 코드의 주소가 올바르지 않습니다');
+  assertPublicKey(obj.k);
   return { url: obj.u, key: obj.k, room: String(obj.r) };
 }
 
@@ -147,7 +178,7 @@ function send(event, payload) {
 }
 
 module.exports = {
-  connect, disconnect, send, makeInvite, parseInvite, randomRoom,
+  connect, disconnect, send, makeInvite, parseInvite, randomRoom, assertPublicKey,
   getStatus: () => status,
   getId: () => myId,
 };
