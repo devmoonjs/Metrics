@@ -1,0 +1,399 @@
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body {
+  background: transparent;   /* 창 배경 투명 */
+  font-family: -apple-system, "SF Pro", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+  user-select: none;
+  overflow: hidden;
+}
+
+/* 카드: 반투명 어두운 배경 위에 시세 표시.
+   전체가 드래그 핸들이고, 입력/버튼만 no-drag로 제외한다. */
+.card {
+  -webkit-app-region: drag;
+  width: 100%;
+  min-height: 100vh;   /* 창을 꽉 채움; fitWindow 가 창을 콘텐츠 높이에 맞추므로 빈 공간 없음 */
+  background: rgba(20, 22, 28, var(--bg-alpha, 0.78));
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  border-radius: 14px;
+  backdrop-filter: blur(6px);
+  padding: 8px 12px 10px;
+  color: #f2f3f5;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.no-drag { -webkit-app-region: no-drag; }
+
+.drag-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 14px;
+}
+.grip { color: rgba(255,255,255,0.35); font-size: 11px; letter-spacing: 1px; }
+
+.icon-btn {
+  -webkit-app-region: no-drag;
+  background: transparent;
+  border: none;
+  color: rgba(255,255,255,0.55);
+  font-size: 12px;
+  cursor: pointer;
+  padding: 2px 4px;
+  border-radius: 6px;
+}
+.icon-btn:hover { background: rgba(255,255,255,0.12); color: #fff; }
+
+/* ---------- 설정 패널 ---------- */
+.settings { display: flex; flex-direction: column; gap: 6px; }
+
+#codeInput {
+  width: 100%;
+  padding: 7px 9px;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.15);
+  background: rgba(255,255,255,0.08);
+  color: #fff;
+  font-size: 13px;
+  outline: none;
+}
+#codeInput::placeholder { color: rgba(255,255,255,0.4); }
+#codeInput:focus { border-color: #4c8dff; }
+
+.row { display: flex; gap: 6px; }
+
+#intervalSelect,
+#themeSelect {
+  flex: 1;
+  padding: 7px 8px;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.15);
+  background: rgba(255,255,255,0.08);
+  color: #fff;
+  font-size: 13px;
+  outline: none;
+}
+#themeSelect {
+  width: 100%;
+  -webkit-appearance: none;
+  appearance: none;
+  /* 우측 드롭다운 화살표 (배경 투명 유지) */
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6'><path d='M0 0l5 6 5-6z' fill='rgba(255,255,255,0.5)'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  padding-right: 26px;
+}
+/* 펼쳐진 옵션 목록은 OS 네이티브라 가독성 위해 어둡게 */
+#themeSelect option,
+#intervalSelect option { background: #1b1d24; color: #fff; }
+
+.primary {
+  flex: 1;
+  padding: 7px 10px;
+  border-radius: 8px;
+  border: none;
+  background: #2f6df6;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.primary:hover { background: #4480ff; }
+.primary:disabled { opacity: 0.5; cursor: default; }
+
+/* ---------- 시세 패널 ---------- */
+.ticker { display: flex; flex-direction: column; gap: 2px; }
+.hidden { display: none !important; }
+
+.ticker-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.t-name { font-size: 12px; color: rgba(255,255,255,0.75); font-weight: 600; }
+
+.ticker-main {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+}
+.t-code { font-size: 13px; color: rgba(255,255,255,0.55); font-variant-numeric: tabular-nums; }
+.t-price {
+  font-size: 26px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.5px;
+}
+
+.t-sub { font-size: 12px; text-align: right; font-variant-numeric: tabular-nums; }
+
+/* 평단가 대비 수익률 (작은 글씨) */
+.t-profit {
+  font-size: 11px;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  opacity: 0.95;
+}
+
+/* 숨김 옵션 체크박스 */
+.checks {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  margin-top: 2px;
+}
+.checks label {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  color: rgba(255,255,255,0.7);
+  cursor: pointer;
+}
+.checks input { cursor: pointer; }
+
+/* 투명도 슬라이더 */
+.opacity-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 2px;
+}
+.opacity-row label {
+  font-size: 11px;
+  color: rgba(255,255,255,0.7);
+  white-space: nowrap;
+}
+#opacitySlider {
+  -webkit-app-region: no-drag;
+  flex: 1;
+  accent-color: #2f6df6;
+  cursor: pointer;
+}
+#opacityVal {
+  font-size: 11px;
+  color: rgba(255,255,255,0.6);
+  width: 34px;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#avgInput {
+  width: 100%;
+  padding: 7px 9px;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.15);
+  background: rgba(255,255,255,0.08);
+  color: #fff;
+  font-size: 13px;
+  outline: none;
+}
+#avgInput::placeholder { color: rgba(255,255,255,0.4); }
+#avgInput:focus { border-color: #4c8dff; }
+
+/* 등락 색상: 상승 빨강 / 하락 파랑 / 보합 회색 (한국식) */
+.up   { color: #ff4d4f; }
+.down { color: #4c8dff; }
+.flat { color: #c8ccd2; }
+
+.flash { animation: flash 0.5s ease; }
+@keyframes flash {
+  0% { background: rgba(255,255,255,0.18); }
+  100% { background: transparent; }
+}
+
+.status-msg { font-size: 11px; color: rgba(255,255,255,0.5); text-align: center; padding: 6px 0; }
+.status-msg.err { color: #ff8a8a; }
+
+/* ===================== 위장 테마 ===================== */
+.mono { font-family: "SF Mono", Menlo, Consolas, "D2Coding", monospace; }
+
+/* 1) 터미널 / 로그 */
+.term {
+  font-family: "SF Mono", Menlo, Consolas, monospace;
+  font-size: 12px;
+  line-height: 1.5;
+}
+.term .tl { color: #7CFC8A; white-space: nowrap; }
+.term .tl-dim { color: rgba(124, 252, 138, 0.5); }
+
+/* 2) 빌드 진행률 */
+.bld { display: flex; flex-direction: column; gap: 6px; }
+.bld-top { font-size: 12px; color: rgba(255,255,255,0.8); }
+.bar {
+  height: 8px;
+  background: rgba(255,255,255,0.12);
+  border-radius: 5px;
+  overflow: hidden;
+}
+.bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #3aa0ff, #6ec1ff);
+  border-radius: 5px;
+  transition: width 0.45s ease;
+}
+.bld-line {
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+  font-family: "SF Mono", Menlo, Consolas, monospace;
+}
+
+/* 3) 스프레드시트 셀 */
+.sheet {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 12px;
+  font-family: "SF Mono", Menlo, Consolas, monospace;
+}
+.sheet th {
+  background: rgba(255,255,255,0.08);
+  color: rgba(255,255,255,0.6);
+  font-weight: 500;
+  border: 1px solid rgba(255,255,255,0.12);
+  padding: 2px 6px;
+}
+.sheet td {
+  border: 1px solid rgba(255,255,255,0.12);
+  padding: 3px 7px;
+  color: #e8eaed;
+}
+.sheet .rn {
+  background: rgba(255,255,255,0.06);
+  color: rgba(255,255,255,0.5);
+  text-align: center;
+  width: 18px;
+}
+.sheet .num { text-align: right; font-variant-numeric: tabular-nums; }
+
+/* 4) 채팅 / 메신저 */
+.chat { display: flex; flex-direction: column; gap: 4px; }
+.chat-name { font-size: 11px; color: rgba(255,255,255,0.6); }
+.bubble {
+  align-self: flex-start;
+  background: rgba(255,255,255,0.13);
+  border-radius: 12px;
+  border-top-left-radius: 3px;
+  padding: 7px 11px;
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+}
+.chat-meta { font-size: 11px; color: rgba(255,255,255,0.55); }
+.chat-msg { margin-bottom: 6px; }
+.chat-msg:last-child { margin-bottom: 0; }
+
+/* ===================== 검색 / watchlist ===================== */
+#searchInput {
+  width: 100%;
+  padding: 7px 9px;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.15);
+  background: rgba(255,255,255,0.08);
+  color: #fff;
+  font-size: 13px;
+  outline: none;
+}
+#searchInput::placeholder { color: rgba(255,255,255,0.4); }
+#searchInput:focus { border-color: #4c8dff; }
+
+.search-wrap { position: relative; }
+.search-results {
+  margin-top: 4px;
+  background: rgba(28, 31, 38, 0.96);
+  border: 1px solid rgba(255,255,255,0.14);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.sr-item {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 9px;
+  cursor: pointer;
+}
+.sr-item:hover { background: rgba(76, 141, 255, 0.22); }
+.sr-flag { font-size: 13px; }
+.sr-name { font-size: 13px; color: #f2f3f5; font-weight: 600; }
+.sr-sub { font-size: 10.5px; color: rgba(255,255,255,0.45); margin-left: auto; }
+
+.watchlist { display: flex; flex-direction: column; gap: 5px; }
+.wl-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  background: rgba(255,255,255,0.06);
+  border-radius: 7px;
+  padding: 5px 7px;
+}
+.wl-head { display: flex; align-items: center; gap: 6px; }
+.wl-flag { font-size: 12px; }
+.wl-name {
+  font-size: 12px; color: #e8eaed; font-weight: 600;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1; min-width: 0;
+}
+.wl-inputs { display: flex; gap: 6px; }
+.wl-avg, .wl-target {
+  flex: 1; min-width: 0;
+  padding: 3px 6px;
+  border-radius: 6px;
+  border: 1px solid rgba(255,255,255,0.14);
+  background: rgba(255,255,255,0.07);
+  color: #fff;
+  font-size: 11px;
+  outline: none;
+}
+.wl-avg::placeholder, .wl-target::placeholder { color: rgba(255,255,255,0.35); }
+.wl-avg:focus, .wl-target:focus { border-color: #4c8dff; }
+.wl-del {
+  -webkit-app-region: no-drag;
+  background: transparent; border: none; color: rgba(255,255,255,0.5);
+  font-size: 12px; cursor: pointer; padding: 2px 4px; border-radius: 5px;
+}
+.wl-del:hover { background: rgba(255,90,90,0.25); color: #fff; }
+
+/* 급등락 알림 행 */
+.alert-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 2px;
+  font-size: 11px;
+  color: rgba(255,255,255,0.7);
+}
+.alert-row label { display: flex; align-items: center; gap: 4px; cursor: pointer; white-space: nowrap; }
+.alert-row input[type="checkbox"] { cursor: pointer; }
+#surgePct {
+  width: 34px;
+  padding: 2px 4px;
+  border-radius: 5px;
+  border: 1px solid rgba(255,255,255,0.14);
+  background: rgba(255,255,255,0.07);
+  color: #fff;
+  font-size: 11px;
+  text-align: center;
+  outline: none;
+}
+.alert-unit { color: rgba(255,255,255,0.5); }
+.alert-os { margin-left: auto; }
+
+/* ===================== 다중 행 시세 레이아웃 ===================== */
+/* 미니멀: 종목당 한 행 (좌: 이름/코드, 우: 가격) */
+.m-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 5px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+}
+.m-row:last-child { border-bottom: none; }
+.m-left { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+.m-right { display: flex; flex-direction: column; align-items: flex-end; gap: 0; }
+.m-right .t-price { font-size: 20px; line-height: 1.1; }
+.m-right .t-sub, .m-right .t-profit { text-align: right; }
+
+/* 터미널/빌드: 여러 행 간격 */
+.term .tl { margin-top: 1px; }
+.bld-item { padding-bottom: 2px; }

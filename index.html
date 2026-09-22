@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self'" />
+  <title>Stock Ticker</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="app" class="card">
+    <!-- 드래그 가능한 헤더 영역 -->
+    <div class="drag-bar">
+      <span class="grip">⠿</span>
+      <div class="bar-btns">
+        <button id="stopBtn" class="icon-btn no-drag hidden" title="설정">⚙</button>
+        <button id="closeBtn" class="icon-btn no-drag" title="종료">✕</button>
+      </div>
+    </div>
+
+    <!-- 설정 패널 -->
+    <div id="settings" class="settings">
+      <div class="search-wrap">
+        <input id="searchInput" class="no-drag" type="text" autocomplete="off"
+               placeholder="종목명·코드 검색 (예: 삼성, AAPL, 005930)" />
+        <div id="searchResults" class="search-results hidden"></div>
+      </div>
+      <div id="watchlist" class="watchlist"></div>
+      <select id="themeSelect" class="no-drag">
+        <option value="minimal">테마: 미니멀</option>
+        <option value="terminal">테마: 터미널/로그</option>
+        <option value="build">테마: 빌드 진행률</option>
+        <option value="sheet">테마: 스프레드시트</option>
+        <option value="chat">테마: 채팅/메신저</option>
+      </select>
+      <div class="row">
+        <select id="intervalSelect" class="no-drag">
+          <option value="30">30초</option>
+          <option value="60">1분</option>
+        </select>
+        <button id="startBtn" class="no-drag primary">시작</button>
+      </div>
+      <div class="checks">
+        <label class="no-drag"><input id="hideName" type="checkbox" /> 종목명 숨기기</label>
+        <label class="no-drag"><input id="hideCode" type="checkbox" /> 종목코드 숨기기</label>
+        <label class="no-drag"><input id="bizMode" type="checkbox" /> 비즈니스 모드 (업무용 워딩)</label>
+      </div>
+      <div class="alert-row">
+        <label class="no-drag"><input id="surgeOn" type="checkbox" /> 급등락 알림 ±</label>
+        <input id="surgePct" class="no-drag" type="text" inputmode="decimal" value="5" maxlength="4" />
+        <span class="alert-unit">%</span>
+        <label class="no-drag alert-os"><input id="osNotify" type="checkbox" checked /> OS알림</label>
+      </div>
+      <div class="opacity-row">
+        <label>투명도</label>
+        <input id="opacitySlider" class="no-drag" type="range" min="10" max="100" value="78" />
+        <span id="opacityVal">78%</span>
+      </div>
+    </div>
+
+    <!-- 시세 표시 패널: 선택한 테마가 이 안을 채운다 -->
+    <div id="ticker" class="ticker hidden">
+      <div id="tickerBody"></div>
+    </div>
+  </div>
+
+  <script src="renderer.js"></script>
+</body>
+</html>
