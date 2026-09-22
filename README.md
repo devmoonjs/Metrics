@@ -40,6 +40,33 @@ Colors follow the Korean convention: **red for a rise, blue for a decline**. US 
 
 ## Installation
 
+Download the latest `.dmg` from [Releases](https://github.com/devmoonjs/Metrics/releases) and drag `Metrics.app` into your Applications folder. It runs on both Apple Silicon and Intel Macs.
+
+A Windows installer is not published yet; build it yourself (see [Building](#building)).
+
+### Approving the first launch
+
+The app is ad-hoc signed but not notarized by Apple, so macOS blocks a downloaded copy the first time it is opened.
+
+1. Open `Metrics.app` once (a warning appears)
+2. Open **System Settings → Privacy & Security**
+3. Scroll down and click **Open Anyway**
+4. Click **Open** in the warning that appears again
+
+This is only needed once. If you prefer the terminal, one line does the same thing:
+
+```bash
+xattr -dr com.apple.quarantine /Applications/Metrics.app
+```
+
+> Notarization requires an Apple Developer Program membership ($99/year), which this personal project does not have.
+
+---
+
+## Running from source
+
+To run the app from the repository instead of an installed build:
+
 ```bash
 npm install
 npm start
@@ -190,7 +217,7 @@ Combined with the name and code hiding options, no symbol identifiers remain on 
 npm run dist:win
 ```
 
-Output: `dist/Metrics Setup 1.0.0.exe` (x64 NSIS installer)
+Output: `dist/Metrics Setup 1.1.0.exe` (x64 NSIS installer)
 
 ### Windows — portable archive (.zip)
 
@@ -198,7 +225,7 @@ Output: `dist/Metrics Setup 1.0.0.exe` (x64 NSIS installer)
 npm run dist:win:zip
 ```
 
-Output: `dist/Metrics-1.0.0-win.zip` (x64, no installation required)
+Output: `dist/Metrics-1.1.0-win.zip` (x64, no installation required)
 
 Extract the archive and run `Metrics.exe` from the extracted folder. The entire folder must be kept together — the executable depends on the adjacent DLLs and the `resources` directory.
 
@@ -208,20 +235,20 @@ Extract the archive and run `Metrics.exe` from the extracted folder. The entire 
 npm run dist:mac
 ```
 
-Output: `dist/Metrics-1.0.0-universal.dmg` (universal binary, Apple Silicon and Intel)
+Output: `dist/Metrics-1.1.0-universal.dmg` (universal binary, Apple Silicon and Intel)
 
 ### Code signing
 
 The distributed binaries are **not signed with a paid certificate and are not notarized**, so both operating systems will warn on first launch:
 
 - **Windows** — SmartScreen displays a warning. Select `More info` → `Run anyway`.
-- **macOS** — the build applies an ad-hoc signature, which is required for the application to run at all on Apple Silicon. Gatekeeper still reports an unidentified developer, so the first launch must be approved with **right-click → Open → Open**.
+- **macOS** — the build applies an ad-hoc signature, which is required for the application to run at all on Apple Silicon. It is not notarized, so Gatekeeper blocks the first launch — see [Approving the first launch](#approving-the-first-launch).
 
 | Platform | Artifact |
 |----------|----------|
-| Windows (installer) | `dist/Metrics Setup 1.0.0.exe` |
-| Windows (portable) | `dist/Metrics-1.0.0-win.zip` |
-| macOS | `dist/Metrics-1.0.0-universal.dmg` |
+| Windows (installer) | `dist/Metrics Setup 1.1.0.exe` |
+| Windows (portable) | `dist/Metrics-1.1.0-win.zip` |
+| macOS | `dist/Metrics-1.1.0-universal.dmg` |
 
 No API keys or additional configuration are required.
 
