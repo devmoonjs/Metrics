@@ -1,11 +1,11 @@
 <div align="center">
   <img src="build/icon.png" width="96" alt="Metrics logo" />
   <h1>Metrics</h1>
-  <p>A transparent, always-on-top desktop overlay that displays real-time stock quotes.<br/>
-  Built with Electron for Windows and macOS.</p>
+  <p>A transparent, always-on-top overlay for real-time stock quotes —<br/>
+  with desktop characters your friends can join, punch and throw balls at.</p>
   <p><b>English</b> · <a href="README.ko.md">한국어</a></p>
-  <img src="screenshots/demo.gif" width="330" alt="Searching for a symbol, adding it and starting the overlay" />
-  <p><sub>Searching for 삼성전자, adding it with a cost basis and a target price, and starting the overlay.</sub></p>
+  <img src="screenshots/friends.gif" width="900" alt="A full Mac screen where a ball is thrown at a friend's character" />
+  <p><sub>An unmodified recording of a real Mac screen. The ball crosses the screen, hits 민지, and 민지 throws one back.</sub></p>
 </div>
 
 > **Note** — the application interface is currently available in Korean only. This README is available in both English and Korean.
@@ -75,6 +75,10 @@ npm start
 ---
 
 ## Usage
+
+<img src="screenshots/demo.gif" width="330" alt="Searching for a symbol, adding it and starting the overlay" />
+
+<sub>Searching for 삼성전자, adding it with a cost basis and a target price, and starting the overlay.</sub>
 
 ### 1. Adding symbols
 
@@ -153,8 +157,6 @@ Places a character on the desktop with the current price and return of the selec
 
 ### Playing with friends
 
-<img src="screenshots/friends.gif" width="900" alt="A full Mac screen; near the bottom right, a ball is thrown at a friend's character" />
-
 **From separate computers, however far apart you are**, joining the same room makes your friends' characters appear on your desktop. Position and movement are shared in real time, and each friend's return is shown above their head.
 
 And you can reach each other.
@@ -163,7 +165,7 @@ And you can reach each other.
 - `G` — throw a ball. It arcs across the screen and lands on a character at the far end
 - Getting hit turns the eyes into `××` and knocks the character backwards
 
-The clip above is an unmodified recording of a full Mac screen — the characters float above an ordinary browser window. The one on the left is me (삼성전자, -16.52%, blue) and the one on the right is 민지 (+1.83%, red). The thrown ball travels across the screen and hits 민지, who throws one back and hits me.
+In the clip at the top of this page the characters float above an ordinary browser window. The one on the left is me (삼성전자, -16.52%, blue) and the one on the right is 민지 (+1.83%, red). The thrown ball travels across the screen and hits 민지, who throws one back and hits me.
 
 Connections use Supabase Realtime. **No connection details are stored in this repository.** Whoever opens the room creates a free project and shares an invite code.
 
