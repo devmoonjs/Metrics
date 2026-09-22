@@ -1,8 +1,8 @@
 <div align="center">
   <img src="build/icon.png" width="96" alt="Metrics logo" />
   <h1>Metrics</h1>
-  <p>A transparent, always-on-top overlay for real-time stock quotes —<br/>
-  with desktop characters your friends can join, punch and throw balls at.</p>
+  <p>See what your friends are making — and throw a ball at them for it.<br/>
+  Desktop characters carrying each other's returns, on a transparent stock overlay.</p>
   <p><b>English</b> · <a href="README.ko.md">한국어</a></p>
   <img src="screenshots/friends.gif" width="900" alt="A full Mac screen where a ball is thrown at a friend's character" />
   <p><sub>An unmodified recording of a real Mac screen. The ball crosses the screen, hits 민지, and 민지 throws one back.</sub></p>
@@ -12,14 +12,24 @@
 
 ---
 
+## What is this
+
+On its own it is a quote widget — a transparent window in the corner of your screen showing the symbols you follow.
+
+Connect with friends and their characters appear on your desktop. You can tell at a glance who is up and who is down today — a good day turns a character red and smiling, a bad one turns it blue and glum (red means up, following the Korean convention). If you do not like what you see, throw a ball at them.
+
+> **Friend mode takes a little setup.** Everyone needs the app installed, and whoever opens the room has to create a free [Supabase](https://supabase.com) project and share an invite code. The steps are under [Playing with friends](#playing-with-friends).
+
+---
+
 ## Features
 
+- **Play with friends** — join the same room and your friends' characters walk around your desktop carrying their returns. Punch them, or hit them with a thrown ball
 - **Korean and US markets** — KRX, NASDAQ and NYSE symbols
 - **Search by name** — look up `삼성`, `apple` or a ticker code directly; no need to know the symbol code
 - **Multiple symbols** — quotes are stacked vertically in a single window
 - **Automatic refresh** — every 30 seconds or every minute
 - **Return on cost basis** — enter an average purchase price per symbol to display the current return
-- **Character mode** — puts a character on your desktop. Join a room with friends and their characters appear on your screen too, where you can punch them or hit them with a thrown ball
 - **Price alerts** — a per-symbol target price with automatic crossing detection in both directions, plus a surge/drop alert on the daily change rate, delivered as native OS notifications
 - **Transparent and draggable** — frameless window, always on top, movable anywhere on screen
 - **Adjustable opacity** — 10–100%
