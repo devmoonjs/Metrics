@@ -7,6 +7,7 @@ const tickerBody = $('tickerBody');
 const searchInput = $('searchInput');
 const searchResults = $('searchResults');
 const petMode = $('petMode');
+const petWander = $('petWander');
 const watchlistEl = $('watchlist');
 const intervalSelect = $('intervalSelect');
 const themeSelect = $('themeSelect');
@@ -341,7 +342,7 @@ function saveSettings() {
     interval: intervalSelect.value, theme: themeSelect.value,
     hideName: hideName.checked, hideCode: hideCode.checked, biz: bizMode.checked,
     surgeOn: surgeOn.checked, surgePct: surgePct.value, osNotify: osNotify.checked,
-    petMode: petMode.checked,
+    petMode: petMode.checked, petWander: petWander.checked,
   }));
   updatePet();
 }
@@ -360,6 +361,7 @@ function loadSettings() {
     if (c.surgePct) surgePct.value = c.surgePct;
     if (c.osNotify !== undefined) osNotify.checked = !!c.osNotify;
     petMode.checked = !!c.petMode;
+    petWander.checked = !!c.petWander;
   } catch (_) { /* ignore */ }
 }
 
@@ -371,6 +373,7 @@ function petConfig() {
     interval: intervalSelect.value,
     biz: bizMode.checked,
     hideName: hideName.checked,
+    wander: petWander.checked,
   };
 }
 
@@ -379,6 +382,7 @@ function updatePet() {
   if (petMode.checked && watchlist.length) window.api.openPet(petConfig());
 }
 
+petWander.addEventListener('change', saveSettings);
 petMode.addEventListener('change', () => {
   if (petMode.checked && watchlist.length) window.api.openPet(petConfig());
   else window.api.closePet();

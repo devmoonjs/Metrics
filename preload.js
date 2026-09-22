@@ -12,6 +12,7 @@ contextBridge.exposeInMainWorld('api', {
   closePet: () => ipcRenderer.send('close-pet'),
   getPetConfig: () => ipcRenderer.invoke('get-pet-config'),
   setPetInteractive: (on) => ipcRenderer.send('pet-interactive', on),
+  setPetControl: (on) => ipcRenderer.send('pet-control', on),
   onCursor: (fn) => ipcRenderer.on('pet-cursor', (_e, pos) => fn(pos)),
   onPetConfig: (fn) => ipcRenderer.on('pet-config', (_e, cfg) => fn(cfg)),
   onPetClosed: (fn) => ipcRenderer.on('pet-closed', () => fn()),

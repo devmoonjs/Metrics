@@ -40,7 +40,6 @@ html, body {
 
 /* 진행 방향으로 몸을 뒤집는다 */
 .pet.face-left .body-wrap { transform: scaleX(-1); }
-.pet.face-left .bubble { transform: translateX(-50%) scaleX(1); }
 
 .char { display: block; overflow: visible; }
 
@@ -89,12 +88,58 @@ html, body {
   40%      { transform: translateY(-22px) scale(1.06, 0.94); }
 }
 
+/* --- 조종 모드: 발밑에 링이 생기고 키 안내가 뜬다 --- */
+.pet.controlled .body { stroke: rgba(120, 200, 255, 0.95); stroke-width: 2.6; }
+.pet.controlled .shadow { fill: rgba(80, 170, 255, 0.45); }
+
+.ring {
+  position: absolute;
+  left: 50%;
+  bottom: 2px;
+  width: 62px;
+  height: 16px;
+  margin-left: -31px;
+  border: 2px solid rgba(110, 190, 255, 0.85);
+  border-radius: 50%;
+  opacity: 0;
+  transition: opacity 0.18s ease;
+  animation: ringPulse 1.5s ease-in-out infinite;
+}
+.pet.controlled .ring { opacity: 1; }
+@keyframes ringPulse {
+  0%, 100% { transform: scale(1);    border-color: rgba(110, 190, 255, 0.85); }
+  50%      { transform: scale(1.12); border-color: rgba(110, 190, 255, 0.35); }
+}
+
+.hint {
+  position: relative;
+  padding: 3px 9px;
+  border-radius: 8px;
+  background: rgba(20, 23, 32, 0.88);
+  color: rgba(190, 220, 255, 0.9);
+  font-size: 10px;
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+.hint { display: none; }
+.pet.controlled .hint { display: block; opacity: 1; }
+
 /* ----------------------- 말풍선 ----------------------- */
-.bubble {
+/* 머리 위 스택: 힌트가 위, 말풍선이 아래 */
+.above {
   position: absolute;
   left: 50%;
   bottom: 78px;
   transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.bubble {
+  position: relative;
   min-width: 108px;
   padding: 7px 11px 8px;
   border-radius: 12px;

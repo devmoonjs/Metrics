@@ -11,12 +11,17 @@
   <!-- 화면 전체를 덮는 투명 레이어. 클릭은 뒤로 통과하고, 캐릭터 위에서만 마우스를 받는다. -->
   <div id="stage">
     <div id="pet" class="pet">
-      <!-- 머리 위 말풍선: 대표 종목의 평단가와 수익률 -->
-      <div id="bubble" class="bubble hidden">
-        <div class="bub-name" id="bubName">—</div>
-        <div class="bub-price" id="bubPrice">—</div>
-        <div class="bub-pnl" id="bubPnl"></div>
+      <!-- 머리 위: 조종 안내 + 대표 종목 말풍선 (아래에서 위로 쌓인다) -->
+      <div class="above">
+        <div class="hint">← → 이동 · ↑ 점프 · Esc 해제</div>
+        <div id="bubble" class="bubble hidden">
+          <div class="bub-name" id="bubName">—</div>
+          <div class="bub-price" id="bubPrice">—</div>
+          <div class="bub-pnl" id="bubPnl"></div>
+        </div>
       </div>
+
+      <div class="ring"></div>
 
       <div class="body-wrap">
         <svg class="char" viewBox="0 0 80 72" width="80" height="72" aria-hidden="true">
