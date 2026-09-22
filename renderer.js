@@ -6,6 +6,7 @@ const tickerEl = $('ticker');
 const tickerBody = $('tickerBody');
 const searchInput = $('searchInput');
 const searchResults = $('searchResults');
+const petMode = $('petMode');
 const watchlistEl = $('watchlist');
 const intervalSelect = $('intervalSelect');
 const themeSelect = $('themeSelect');
@@ -340,7 +341,9 @@ function saveSettings() {
     interval: intervalSelect.value, theme: themeSelect.value,
     hideName: hideName.checked, hideCode: hideCode.checked, biz: bizMode.checked,
     surgeOn: surgeOn.checked, surgePct: surgePct.value, osNotify: osNotify.checked,
+    petMode: petMode.checked,
   }));
+  updatePet();
 }
 function loadSettings() {
   try {
@@ -356,8 +359,32 @@ function loadSettings() {
     surgeOn.checked = !!c.surgeOn;
     if (c.surgePct) surgePct.value = c.surgePct;
     if (c.osNotify !== undefined) osNotify.checked = !!c.osNotify;
+    petMode.checked = !!c.petMode;
   } catch (_) { /* ignore */ }
 }
+
+/* ----------------------- 캐릭터 레이어 ----------------------- */
+function petConfig() {
+  return {
+    watchlist: watchlist.map((w) => ({ market: w.market, queryCode: w.queryCode, code: w.code,
+      name: w.name, nation: w.nation, avg: w.avg })),
+    interval: intervalSelect.value,
+    biz: bizMode.checked,
+    hideName: hideName.checked,
+  };
+}
+
+// 설정이 바뀔 때마다 캐릭터에도 반영한다 (켜져 있을 때만).
+function updatePet() {
+  if (petMode.checked && watchlist.length) window.api.openPet(petConfig());
+}
+
+petMode.addEventListener('change', () => {
+  if (petMode.checked && watchlist.length) window.api.openPet(petConfig());
+  else window.api.closePet();
+  saveSettings();
+});
+window.api.onPetClosed(() => { petMode.checked = false; saveSettings(); });
 
 /* ----------------------- 이벤트 ----------------------- */
 searchInput.addEventListener('input', doSearch);

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self'" />
+  <title>Metrics Character</title>
+  <link rel="stylesheet" href="character.css" />
+</head>
+<body>
+  <!-- 화면 전체를 덮는 투명 레이어. 클릭은 뒤로 통과하고, 캐릭터 위에서만 마우스를 받는다. -->
+  <div id="stage">
+    <div id="pet" class="pet">
+      <!-- 머리 위 말풍선: 대표 종목의 평단가와 수익률 -->
+      <div id="bubble" class="bubble hidden">
+        <div class="bub-name" id="bubName">—</div>
+        <div class="bub-price" id="bubPrice">—</div>
+        <div class="bub-pnl" id="bubPnl"></div>
+      </div>
+
+      <div class="body-wrap">
+        <svg class="char" viewBox="0 0 80 72" width="80" height="72" aria-hidden="true">
+          <ellipse class="shadow" cx="40" cy="68" rx="22" ry="4" />
+          <g class="feet">
+            <ellipse class="foot foot-l" cx="30" cy="63" rx="7" ry="4.5" />
+            <ellipse class="foot foot-r" cx="50" cy="63" rx="7" ry="4.5" />
+          </g>
+          <path class="body" d="M40 8
+            C 58 8 68 22 68 38
+            C 68 54 56 64 40 64
+            C 24 64 12 54 12 38
+            C 12 22 22 8 40 8 Z" />
+          <g class="face">
+            <g class="eyes">
+              <ellipse class="eye eye-l" cx="30" cy="34" rx="4.4" ry="5.2" />
+              <ellipse class="eye eye-r" cx="50" cy="34" rx="4.4" ry="5.2" />
+              <circle class="glint glint-l" cx="31.6" cy="32.2" r="1.5" />
+              <circle class="glint glint-r" cx="51.6" cy="32.2" r="1.5" />
+            </g>
+            <path class="mouth" d="M34 45 Q40 49 46 45" />
+            <ellipse class="blush blush-l" cx="22" cy="43" rx="4.5" ry="2.8" />
+            <ellipse class="blush blush-r" cx="58" cy="43" rx="4.5" ry="2.8" />
+          </g>
+        </svg>
+      </div>
+
+      <!-- 캐릭터에 마우스를 올렸을 때만 나타난다 -->
+      <div class="tools">
+        <button class="tool" data-act="next" title="다음 종목">▸</button>
+        <button class="tool" data-act="close" title="닫기">✕</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="character.js"></script>
+</body>
+</html>
